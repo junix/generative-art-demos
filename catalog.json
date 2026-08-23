@@ -1,0 +1,14 @@
+[
+  {"id":"flow-field","use":"particle systems","family":"particle systems","question":"What trajectories emerge from a seeded curl-like field?","complexity":"advanced","tags":["noise","particles","flow"]},
+  {"id":"reaction","use":"simulation","family":"simulation","question":"How do activator and inhibitor fields organize texture?","complexity":"advanced","tags":["reaction-diffusion","field","simulation"]},
+  {"id":"botanical","use":"recursive systems","family":"recursive systems","question":"How can an L-system produce a coherent herbarium?","complexity":"advanced","tags":["l-system","botanical","recursion"]},
+  {"id":"attractor","use":"dynamical systems","family":"dynamical systems","question":"How does a strange attractor reveal density over time?","complexity":"advanced","tags":["attractor","trajectory","chaos"]},
+  {"id":"circle-packing","use":"constraint systems","family":"constraint systems","question":"How can weighted circles settle into a balanced editorial composition?","complexity":"advanced","tags":["packing","collision","composition"]},
+  {"id":"quadtree","use":"spatial subdivision","family":"spatial subdivision","question":"How does adaptive subdivision reveal local image complexity?","complexity":"advanced","tags":["quadtree","subdivision","sampling"]},
+  {"id":"topography","use":"scalar fields","family":"scalar fields","question":"How can nested iso-lines evoke a fictional terrain?","complexity":"advanced","tags":["contour","noise","terrain"]},
+  {"id":"tapestry","use":"pattern systems","family":"pattern systems","question":"How can modular motifs build a textile-like field?","complexity":"advanced","tags":["pattern","tiles","textile"]},
+  {"id":"swarm","use":"agent systems","family":"agent systems","question":"How do local steering rules create global flock structure?","complexity":"advanced","tags":["boids","agents","motion"]},
+  {"id":"interference","use":"wave systems","family":"wave systems","question":"How do multiple radial sources form an interference atlas?","complexity":"advanced","tags":["waves","interference","field"]},
+  {"id":"maze","use":"algorithmic structure","family":"algorithmic structure","question":"How can a maze generator become a finished graphic?","complexity":"advanced","tags":["maze","algorithm","paths"]},
+  {"id":"tiling","use":"geometric systems","family":"geometric systems","question":"How can aperiodic-looking tiles preserve a strict construction rule?","complexity":"advanced","tags":["tiling","geometry","symmetry"]}
+]
