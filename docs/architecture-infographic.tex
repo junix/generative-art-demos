@@ -1,5 +1,12 @@
-\documentclass[tikz,border=0pt,dvipdfmx]{standalone}
+% Render: python3 ~/.agents/skills/create-infographic/scripts/render_tikz.py docs/architecture-infographic.tex --workdir . --out-dir docs --engine xelatex --dpi 300 --svg --strict-warnings --strict-geometry --strict-composition --strict-svg --min-labelled-connectors 0.6 --expect-text "generative-art-demos"
+\documentclass[tikz,border=0pt]{standalone}
 \usepackage[UTF8,fontset=fandol]{ctex}
+% Prefer Source Han Sans SC when installed (exact em-width glyph boxes);
+% the ctex fandol set above remains the portable fallback.
+\IfFontExistsTF{Source Han Sans SC}{%
+  \setCJKmainfont{Source Han Sans SC}%
+  \setCJKsansfont{Source Han Sans SC}%
+}{}
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, decorations.pathreplacing, decorations.pathmorphing, patterns, fit, backgrounds}
 \usepackage{xcolor}
@@ -33,35 +40,23 @@
 ]
 
 % === BACKGROUND ===
-\fill[darkbg] (0,0) rectangle (1200,900);
-
-% Top accent bar
-\fill[primary] (0,892) rectangle (1200,900);
-
-% Grid pattern subtle
-\foreach \x in {0,40,...,1200} {
-  \draw[gridcol, line width=0.3pt] (\x,0) -- (\x,900);
-}
-\foreach \y in {0,40,...,900} {
-  \draw[gridcol, line width=0.3pt] (0,\y) -- (1200,\y);
-}
+\fill[darkbg] (0,0) rectangle (1200,1080);
 
 % === HEADER ===
-\node[section-title, anchor=west] at (60, 845) {生成式艺术演示集};
-\node[section-kicker, anchor=west] at (60, 820) {GENERATIVE ART DEMOS  /  12 个确定性 p5.js 透明 PNG 作品};
+\node[section-title, anchor=west] at (60, 1025) {生成式艺术演示集};
+\node[section-kicker, anchor=west] at (60, 998) {GENERA\kern0.7ptTIVE AR\kern0.7ptT DEMOS  /  12 个确定性 p5.js 透明 PNG 作品};
 
 % Decorative line
-\draw[primary, line width=2pt] (60,808) -- (360,808);
-\draw[accent2, line width=1pt] (365,808) -- (500,808);
+\draw[primary, line width=2pt] (60,985) -- (360,985);
 
 % Version badge
-\node[fill=midbg, draw=bordercol, rounded corners=4pt, text=accent1, font=\footnotesize\bfseries, inner sep=4pt] at (1120, 835) {v0.2.0};
+\node[fill=midbg, draw=bordercol, rounded corners=4pt, text=accent1, font=\footnotesize\bfseries, inner sep=4pt] at (1100, 1012) {v0.2.0};
 
 % === SECTION 1: 项目概览 (left column) ===
-\node[card-title, anchor=west] at (60, 770) {项目定位};
-\draw[bordercol, line width=0.5pt] (60,760) -- (280,760);
+\node[card-title, anchor=west] at (60, 950) {项目定位};
+\draw[bordercol, line width=0.5pt] (60,939) -- (280,939);
 
-\node[body-text, anchor=north west, text width=210pt] at (60, 745) {
+\node[body-text, anchor=north west, text width=210pt] at (60, 924) {
 一个以「完成态透明 PNG 构图」为目标的\\
 生成式艺术参考库，而非持续动画。\\[6pt]
 所有作品均使用固定随机种子（seed=42），\\
@@ -69,7 +64,7 @@
 };
 
 % Key metrics row
-\begin{scope}[shift={(60, 640)}]
+\begin{scope}[shift={(60, 768)}]
   % Metric 1
   \fill[midbg] (0,0) rectangle (100,70);
   \draw[bordercol] (0,0) rectangle (100,70);
@@ -86,23 +81,23 @@
   \fill[midbg] (220,0) rectangle (320,70);
   \draw[bordercol] (220,0) rectangle (320,70);
   \node[font=\bfseries\Large, text=accent1] at (270, 42) {1400};
-  \node[font=\footnotesize, text=mutetext] at (270, 18) {输出宽度(px)};
+  \node[font=\footnotesize, text=mutetext] at (270, 18) {输出宽度 / px};
 \end{scope}
 
 % === SECTION 2: 技术栈 ===
-\node[card-title, anchor=west] at (60, 590) {核心技术栈};
-\draw[bordercol, line width=0.5pt] (60,580) -- (280,580);
+\node[card-title, anchor=west] at (60, 730) {核心技术栈};
+\draw[bordercol, line width=0.5pt] (60,720) -- (280,720);
 
-\begin{scope}[shift={(60, 560)}]
+\begin{scope}[shift={(60, 697)}]
   % Tech items
-  \foreach \name/\color/\y in {
-    p5.js / primary / 0,
-    TypeScript / accent3 / -35,
-    Vite / accent2 / -70,
-    Playwright / accent4 / -105,
-    pngjs / accent1 / -140
+  \foreach \name/\col/\y in {
+    p5.js/primary/0,
+    TypeScript/accent3/-35,
+    Vite/accent2/-70,
+    Playwright/accent4/-105,
+    pngjs/accent1/-140
   } {
-    \fill[\color!20] (0,\y-22) rectangle (8,\y-2);
+    \fill[\col!20] (0,\y-22) rectangle (8,\y-2);
     \node[body-text, anchor=west] at (16, \y-12) {\name};
   }
 
@@ -115,70 +110,70 @@
 \end{scope}
 
 % === SECTION 3: 测试验证 ===
-\node[card-title, anchor=west] at (60, 380) {自动化验证};
-\draw[bordercol, line width=0.5pt] (60,370) -- (280,370);
+\node[card-title, anchor=west] at (60, 498) {自动化验证};
+\draw[bordercol, line width=0.5pt] (60,488) -- (280,488);
 
-\node[body-text, anchor=north west, text width=220pt] at (60, 355) {
+\node[body-text, anchor=north west, text width=220pt] at (60, 473) {
 \textbf{\textcolor{accent2}{npm test}} 执行完整闭环：\\[4pt]
 \begin{enumerate}
-  \item[\tiny\textcolor{accent1}{1}] TypeScript 类型检查
-  \item[\tiny\textcolor{accent1}{2}] Vite 构建产物
-  \item[\tiny\textcolor{accent1}{3}] 启动本地服务器
-  \item[\tiny\textcolor{accent1}{4}] Chrome 无头加载场景
-  \item[\tiny\textcolor{accent1}{5}] 等待 \texttt{\_\_VIS\_READY\_\_}
-  \item[\tiny\textcolor{accent1}{6}] 透明背景截图
-  \item[\tiny\textcolor{accent1}{7}] 像素内容校验
-  \item[\tiny\textcolor{accent1}{8}] 鼠标交互验证
+  \item[\textcolor{accent1}{1}] TypeScript 类型检查
+  \item[\textcolor{accent1}{2}] Vite 构建产物
+  \item[\textcolor{accent1}{3}] 启动本地服务器
+  \item[\textcolor{accent1}{4}] Chrome 无头加载场景
+  \item[\textcolor{accent1}{5}] 等待 \texttt{\_\_VIS\_READY\_\_}
+  \item[\textcolor{accent1}{6}] 透明背景截图
+  \item[\textcolor{accent1}{7}] 像素内容校验
+  \item[\textcolor{accent1}{8}] 鼠标交互验证
 \end{enumerate}
 };
 
 % Quality gate badge
-\begin{scope}[shift={(60, 180)}]
+\begin{scope}[shift={(60, 265)}]
   \fill[midbg] (0,0) rectangle (320,55);
   \draw[accent2!60, line width=1pt] (0,0) rectangle (320,55);
   \node[font=\bfseries\normalsize, text=accent2, anchor=west] at (15, 32) {质量门禁};
-  \node[tiny-text, anchor=west, text width=280pt] at (15, 12) {
+  \node[tiny-text, anchor=west, text width=280pt] at (15, 13) {
     透明度 $>8\%$ · 可见像素 $>3.5\%$ · 彩色像素 $>2500$
   };
 \end{scope}
 
 % === VERTICAL DIVIDER ===
-\draw[bordercol, line width=0.8pt] (400,100) -- (400,800);
+\draw[bordercol, line width=0.8pt] (410,195) -- (410,930);
 
 % === RIGHT SECTION: 12 件作品分类 ===
-\node[card-title, anchor=west] at (440, 770) {作品家族 · 十二种生成算法};
-\draw[bordercol, line width=0.5pt] (440,760) -- (1140,760);
+\node[card-title, anchor=west] at (440, 950) {作品家族 · 十二种生成算法};
+\draw[bordercol, line width=0.5pt] (440,939) -- (1140,939);
 
 % 4 families x 3 pieces grid
 % Each piece: small icon box + title + tags
 
 % Row 1: Particle & Field Systems
-\begin{scope}[shift={(440, 730)}]
-  \node[card-sub, font=\bfseries, text=accent2, anchor=west] at (0,0) {粒子与场系统 · PARTICLE \& FIELD};
-  \draw[accent2!40, line width=0.5pt] (0,-6) -- (720,-6);
+\begin{scope}[shift={(440, 908)}]
+  \node[card-sub, font=\bfseries, text=accent2, anchor=west] at (0,0) {粒子与场系统 · PAR\kern0.7ptTICLE \& FIELD};
+  \draw[accent2!40, line width=0.5pt] (0,-7) -- (700,-7);
 
   % Flow Field
-  \begin{scope}[shift={(0,-55)}]
-    \fill[midbg] (0,-45) rectangle (220, 25);
-    \draw[bordercol] (0,-45) rectangle (220, 25);
-    % Mini visual: flow lines
-    \begin{scope}[clip]
-      \foreach \i in {0,10,...,100} {
-        \draw[primary!60, line width=0.6pt] (5, -5 - \i*0.3) .. controls (50+\i*0.3, -10-\i*0.2) and (80, -20-\i*0.1) .. (100, -35+\i*0.05);
+  \begin{scope}[shift={(0,-50)}]
+    \fill[midbg] (0,-44) rectangle (214, 24);
+    \draw[bordercol] (0,-44) rectangle (214, 24);
+    % Mini visual: dotted flow streamlines (non-crossing)
+    \foreach \i in {0,1,2,3} {
+      \foreach \j in {0,1,...,10} {
+        \fill[primary!60] ({8+\j*8.2}, {-8-\i*8+2*sin(\j*36)}) circle (0.9pt);
       }
-    \end{scope}
-    \node[font=\bfseries\small, text=lighttext, anchor=west] at (110, 8) {流场 Flow Field};
-    \node[tiny-text, anchor=west] at (110, -8) {噪声粒子轨迹 · 220 粒种子};
-    \node[tiny-text, anchor=west, text=primary!70] at (110, -28) {\#noise \#particles \#flow};
+    }
+    \node[font=\bfseries\small, text=lighttext, anchor=west] at (100, 8) {流场 Flow Field};
+    \node[tiny-text, anchor=west] at (100, -8) {噪声粒子轨迹 · 220 粒种子};
+    \node[tiny-text, anchor=north west, text width=104pt, align=left, text=primary!70] at (100, -15) {\#noise \#particles \#flow};
   \end{scope}
 
   % Reaction Diffusion
-  \begin{scope}[shift={(240,-55)}]
-    \fill[midbg] (0,-45) rectangle (220, 25);
-    \draw[bordercol] (0,-45) rectangle (220, 25);
+  \begin{scope}[shift={(232,-50)}]
+    \fill[midbg] (0,-44) rectangle (214, 24);
+    \draw[bordercol] (0,-44) rectangle (214, 24);
     % Mini visual: reaction dots
-    \foreach \x in {5,13,...,95} {
-      \foreach \y in {-10,-18,...,-40} {
+    \foreach \x in {8,16,...,88} {
+      \foreach \y in {-8,-16,...,-40} {
         \pgfmathparse{int(random(0,100))}
         \ifnum\pgfmathresult>50
           \fill[accent2!70] (\x, \y) circle (1.5pt);
@@ -187,298 +182,292 @@
         \fi
       }
     }
-    \node[font=\bfseries\small, text=lighttext, anchor=west] at (110, 8) {反应扩散 Reaction};
-    \node[tiny-text, anchor=west] at (110, -8) {激活剂/抑制剂场 · 5 次迭代};
-    \node[tiny-text, anchor=west, text=accent2!70] at (110, -28) {\#reaction-diffusion \#simulation};
+    \node[font=\bfseries\small, text=lighttext, anchor=west] at (100, 8) {反应扩散 Reaction};
+    \node[tiny-text, anchor=west] at (100, -8) {激活剂/抑制剂场 · 5 次迭代};
+    \node[tiny-text, anchor=north west, text width=104pt, align=left, text=accent2!70] at (100, -15) {\#reaction-diffusion \#simulation};
   \end{scope}
 
   % Interference
-  \begin{scope}[shift={(480,-55)}]
-    \fill[midbg] (0,-45) rectangle (240, 25);
-    \draw[bordercol] (0,-45) rectangle (240, 25);
-    % Mini visual: interference circles
-    \foreach \r in {3,9,...,45} {
-      \draw[accent3!50, line width=0.4pt] (30, -10) circle (\r pt);
-      \draw[accent4!40, line width=0.4pt] (80, -25) circle (\r pt);
-    }
-    \node[font=\bfseries\small, text=lighttext, anchor=west] at (115, 8) {干涉图谱 Interference};
-    \node[tiny-text, anchor=west] at (115, -8) {5 个径向波源 · 相位合成};
-    \node[tiny-text, anchor=west, text=accent3!70] at (115, -28) {\#waves \#interference \#field};
+  \begin{scope}[shift={(464,-50)}]
+    \fill[midbg] (0,-44) rectangle (236, 24);
+    \draw[bordercol] (0,-44) rectangle (236, 24);
+    % Mini visual: one wave ring + off-centre source dots
+    \draw[accent3!50, line width=0.5pt] (46, -12) circle (22pt);
+    \fill[accent3!70] (46, -12) circle (2pt);
+    \fill[accent4!60] (10, -34) circle (1.5pt);
+    \fill[accent4!60] (84, -4) circle (1.5pt);
+    \fill[accent4!60] (12, 10) circle (1.5pt);
+    \fill[accent4!60] (82, -32) circle (1.5pt);
+    \node[font=\bfseries\small, text=lighttext, anchor=west] at (100, 8) {干涉图谱 Interference};
+    \node[tiny-text, anchor=west] at (100, -8) {5 个径向波源 · 相位合成};
+    \node[tiny-text, anchor=north west, text width=126pt, align=left, text=accent3!70] at (100, -15) {\#waves \#interference \#field};
   \end{scope}
 \end{scope}
 
 % Row 2: Recursive & Dynamical Systems
-\begin{scope}[shift={(440, 610)}]
+\begin{scope}[shift={(440, 796)}]
   \node[card-sub, font=\bfseries, text=primary, anchor=west] at (0,0) {递归与动力系统 · RECURSIVE \& DYNAMICAL};
-  \draw[primary!40, line width=0.5pt] (0,-6) -- (720,-6);
+  \draw[primary!40, line width=0.5pt] (0,-7) -- (700,-7);
 
   % Botanical
-  \begin{scope}[shift={(0,-55)}]
-    \fill[midbg] (0,-45) rectangle (220, 25);
-    \draw[bordercol] (0,-45) rectangle (220, 25);
-    % Mini visual: L-system tree
-    \draw[accent2!70, line width=0.8pt] (30, -40) -- (30, -20);
-    \draw[accent2!70, line width=0.6pt] (30, -20) -- (20, -10);
-    \draw[accent2!70, line width=0.6pt] (30, -20) -- (40, -10);
-    \draw[accent1!60, line width=0.5pt] (20, -10) -- (15, 0);
-    \draw[accent1!60, line width=0.5pt] (20, -10) -- (25, 0);
-    \draw[accent1!60, line width=0.5pt] (40, -10) -- (35, 0);
-    \draw[accent1!60, line width=0.5pt] (40, -10) -- (45, 0);
-    \fill[primary!60] (20, -3) circle (1.5pt);
-    \fill[primary!60] (40, -3) circle (1.5pt);
-    \node[font=\bfseries\small, text=lighttext, anchor=west] at (110, 8) {植物递归 Botanical};
-    \node[tiny-text, anchor=west] at (110, -8) {L 系统植物标本 · 6 层深度};
-    \node[tiny-text, anchor=west, text=accent2!70] at (110, -28) {\#l-system \#recursion \#botanical};
+  \begin{scope}[shift={(0,-50)}]
+    \fill[midbg] (0,-44) rectangle (214, 24);
+    \draw[bordercol] (0,-44) rectangle (214, 24);
+    % Mini visual: L-system plant (filled silhouette, no strokes)
+    \fill[accent2!45] (28,-38) rectangle (32,-18);
+    \fill[accent2!55] (24,-13) circle (4.5pt);
+    \fill[accent2!55] (36,-13) circle (4.5pt);
+    \fill[accent2!55] (30,-22) circle (4.5pt);
+    \fill[accent2!55] (30,-4) circle (4.5pt);
+    \fill[primary!70] (24,-13) circle (1.3pt);
+    \fill[primary!70] (36,-13) circle (1.3pt);
+    \fill[primary!70] (30,-4) circle (1.3pt);
+    \node[font=\bfseries\small, text=lighttext, anchor=west] at (100, 8) {植物递归 Botanical};
+    \node[tiny-text, anchor=west] at (100, -8) {L 系统植物标本 · 6 层深度};
+    \node[tiny-text, anchor=north west, text width=104pt, align=left, text=accent2!70] at (100, -15) {\#l-system \#recursion \#botanical};
   \end{scope}
 
   % Attractor
-  \begin{scope}[shift={(240,-55)}]
-    \fill[midbg] (0,-45) rectangle (220, 25);
-    \draw[bordercol] (0,-45) rectangle (220, 25);
+  \begin{scope}[shift={(232,-50)}]
+    \fill[midbg] (0,-44) rectangle (214, 24);
+    \draw[bordercol] (0,-44) rectangle (214, 24);
     % Mini visual: strange attractor scatter
     \foreach \i in {1,...,80} {
-      \pgfmathparse{rnd}
-      \pgfmathsetmacro\x{50 + (rnd-0.5)*80}
-      \pgfmathsetmacro\y{-20 + (rnd-0.5)*30 + sin(\i*37)*10}
+      \pgfmathsetmacro\x{50 + rnd*80 - 40}
+      \pgfmathsetmacro\y{-20 + rnd*30 - 15 + sin(\i*37)*10}
       \fill[accent4!60] (\x pt, \y pt) circle (0.5pt);
     }
-    \node[font=\bfseries\small, text=lighttext, anchor=west] at (110, 8) {奇异吸引子 Attractor};
-    \node[tiny-text, anchor=west] at (110, -8) {Clifford Map · 24万次迭代};
-    \node[tiny-text, anchor=west, text=accent4!70] at (110, -28) {\#attractor \#chaos \#trajectory};
+    \node[font=\bfseries\small, text=lighttext, anchor=west] at (100, 8) {奇异吸引子 Attractor};
+    \node[tiny-text, anchor=west] at (100, -8) {Clifford Map · 24万次迭代};
+    \node[tiny-text, anchor=north west, text width=104pt, align=left, text=accent4!70] at (100, -15) {\#attractor \#chaos \#trajectory};
   \end{scope}
 
   % Swarm
-  \begin{scope}[shift={(480,-55)}]
-    \fill[midbg] (0,-45) rectangle (240, 25);
-    \draw[bordercol] (0,-45) rectangle (240, 25);
-    % Mini visual: swarm boids
+  \begin{scope}[shift={(464,-50)}]
+    \fill[midbg] (0,-44) rectangle (236, 24);
+    \draw[bordercol] (0,-44) rectangle (236, 24);
+    % Mini visual: swarm boids ring
     \foreach \i in {0,10,...,350} {
       \pgfmathsetmacro\angle{\i}
-      \pgfmathsetmacro\r{30 + mod(\i,60)*0.3}
-      \pgfmathsetmacro\x{60 + cos(\angle)*\r}
-      \pgfmathsetmacro\y{-20 + sin(\angle)*\r*0.5}
+      \pgfmathsetmacro\r{30 + mod(\i,60)*0.2}
+      \pgfmathsetmacro\x{48 + cos(\angle)*\r}
+      \pgfmathsetmacro\y{-18 + sin(\angle)*\r*0.5}
       \fill[accent1!70] (\x pt, \y pt) circle (0.8pt);
     }
-    \node[font=\bfseries\small, text=lighttext, anchor=west] at (115, 8) {群体蜂拥 Swarm};
-    \node[tiny-text, anchor=west] at (115, -8) {Boids  steering · 5 个族群};
-    \node[tiny-text, anchor=west, text=accent1!70] at (115, -28) {\#boids \#agents \#motion};
+    \node[font=\bfseries\small, text=lighttext, anchor=west] at (100, 8) {群体蜂拥 Swarm};
+    \node[tiny-text, anchor=west] at (100, -8) {Boids  steering · 5 个族群};
+    \node[tiny-text, anchor=north west, text width=126pt, align=left, text=accent1!70] at (100, -15) {\#boids \#agents \#motion};
   \end{scope}
 \end{scope}
 
 % Row 3: Spatial & Structural Systems
-\begin{scope}[shift={(440, 490)}]
-  \node[card-sub, font=\bfseries, text=accent1, anchor=west] at (0,0) {空间与结构系统 · SPATIAL \& STRUCTURAL};
-  \draw[accent1!40, line width=0.5pt] (0,-6) -- (720,-6);
+\begin{scope}[shift={(440, 684)}]
+  \node[card-sub, font=\bfseries, text=accent1, anchor=west] at (0,0) {空间与结构系统 · SPA\kern0.7ptTIAL \& STRUCTURAL};
+  \draw[accent1!40, line width=0.5pt] (0,-7) -- (700,-7);
 
   % Circle Packing
-  \begin{scope}[shift={(0,-55)}]
-    \fill[midbg] (0,-45) rectangle (220, 25);
-    \draw[bordercol] (0,-45) rectangle (220, 25);
+  \begin{scope}[shift={(0,-50)}]
+    \fill[midbg] (0,-44) rectangle (214, 24);
+    \draw[bordercol] (0,-44) rectangle (214, 24);
     % Mini visual: packed circles
-    \fill[primary!50] (20, -15) circle (12pt);
-    \fill[accent2!40] (50, -25) circle (8pt);
-    \fill[accent1!50] (75, -12) circle (10pt);
-    \fill[accent3!40] (40, -38) circle (5pt);
-    \fill[accent4!50] (90, -30) circle (7pt);
-    \fill[primary!30] (60, -5) circle (4pt);
-    \node[font=\bfseries\small, text=lighttext, anchor=west] at (110, 8) {圆堆积 Circle Packing};
-    \node[tiny-text, anchor=west] at (110, -8) {碰撞消解 · 150 个加权圆};
-    \node[tiny-text, anchor=west, text=primary!70] at (110, -28) {\#packing \#collision \#composition};
+    \fill[primary!50] (20, -14) circle (12pt);
+    \fill[accent2!40] (48, -26) circle (8pt);
+    \fill[accent1!50] (72, -12) circle (10pt);
+    \fill[accent3!40] (38, -36) circle (5pt);
+    \fill[accent4!50] (86, -30) circle (6pt);
+    \fill[primary!30] (58, -6) circle (4pt);
+    \node[font=\bfseries\small, text=lighttext, anchor=west] at (100, 8) {圆堆积 Circle Packing};
+    \node[tiny-text, anchor=west] at (100, -8) {碰撞消解 · 150 个加权圆};
+    \node[tiny-text, anchor=north west, text width=104pt, align=left, text=primary!70] at (100, -15) {\#packing \#collision \#composition};
   \end{scope}
 
   % Quadtree
-  \begin{scope}[shift={(240,-55)}]
-    \fill[midbg] (0,-45) rectangle (220, 25);
-    \draw[bordercol] (0,-45) rectangle (220, 25);
-    % Mini visual: quadtree subdivision
-    \draw[accent3!70, line width=0.7pt] (10, -40) rectangle (90, 5);
-    \draw[accent3!70, line width=0.5pt] (50, -40) -- (50, 5);
-    \draw[accent3!70, line width=0.5pt] (10, -17.5) -- (90, -17.5);
-    \draw[accent3!50, line width=0.4pt] (10, -28.75) -- (50, -28.75);
-    \draw[accent3!50, line width=0.4pt] (30, -17.5) -- (30, -40);
-    \node[font=\bfseries\small, text=lighttext, anchor=west] at (110, 8) {四叉树 Quadtree};
-    \node[tiny-text, anchor=west] at (110, -8) {自适应细分 · 6 层深度};
-    \node[tiny-text, anchor=west, text=accent3!70] at (110, -28) {\#quadtree \#subdivision \#sampling};
+  \begin{scope}[shift={(232,-50)}]
+    \fill[midbg] (0,-44) rectangle (214, 24);
+    \draw[bordercol] (0,-44) rectangle (214, 24);
+    % Mini visual: quadtree subdivision (filled cells, gaps only)
+    \fill[accent3!25] (8,-40) rectangle (46,-22);
+    \fill[accent3!25] (52,-40) rectangle (90,-22);
+    \fill[accent3!25] (8,-16) rectangle (46,2);
+    \fill[accent3!45] (52,-16) rectangle (69,-7);
+    \fill[accent3!45] (72,-16) rectangle (90,-7);
+    \fill[accent3!45] (52,-4) rectangle (69,2);
+    \fill[accent3!45] (72,-4) rectangle (90,2);
+    \node[font=\bfseries\small, text=lighttext, anchor=west] at (100, 8) {四叉树 Quadtree};
+    \node[tiny-text, anchor=west] at (100, -8) {自适应细分 · 6 层深度};
+    \node[tiny-text, anchor=north west, text width=104pt, align=left, text=accent3!70] at (100, -15) {\#quadtree \#subdivision \#sampling};
   \end{scope}
 
   % Maze
-  \begin{scope}[shift={(480,-55)}]
-    \fill[midbg] (0,-45) rectangle (240, 25);
-    \draw[bordercol] (0,-45) rectangle (240, 25);
-    % Mini visual: maze grid
-    \foreach \x in {0,12,...,84} {
-      \foreach \y in {0,-10,...,-40} {
-        \pgfmathparse{int(random(0,100))}
-        \ifnum\pgfmathresult>40
-          \draw[accent4!60, line width=0.5pt] (\x+10, \y-2) -- (\x+20, \y-2);
-        \fi
-        \pgfmathparse{int(random(0,100))}
-        \ifnum\pgfmathresult>50
-          \draw[accent4!60, line width=0.5pt] (\x+10, \y-2) -- (\x+10, \y-10);
-        \fi
-      }
-    }
-    \node[font=\bfseries\small, text=lighttext, anchor=west] at (115, 8) {迷宫生成 Maze};
-    \node[tiny-text, anchor=west] at (115, -8) {深度优先 · 39×21 网格};
-    \node[tiny-text, anchor=west, text=accent4!70] at (115, -28) {\#maze \#algorithm \#paths};
+  \begin{scope}[shift={(464,-50)}]
+    \fill[midbg] (0,-44) rectangle (236, 24);
+    \draw[bordercol] (0,-44) rectangle (236, 24);
+    % Mini visual: maze wall segments (filled bars, gaps only)
+    \fill[accent4!50] (8,-8) rectangle (30,-12);
+    \fill[accent4!50] (38,-8) rectangle (60,-12);
+    \fill[accent4!50] (66,-8) rectangle (88,-12);
+    \fill[accent4!50] (18,-16) rectangle (22,-30);
+    \fill[accent4!50] (48,-16) rectangle (52,-30);
+    \fill[accent4!50] (74,-16) rectangle (78,-28);
+    \fill[accent4!50] (8,-34) rectangle (36,-38);
+    \fill[accent4!50] (44,-34) rectangle (70,-38);
+    \fill[accent4!50] (76,-34) rectangle (88,-38);
+    \node[font=\bfseries\small, text=lighttext, anchor=west] at (100, 8) {迷宫生成 Maze};
+    \node[tiny-text, anchor=west] at (100, -8) {深度优先 · 39×21 网格};
+    \node[tiny-text, anchor=north west, text width=126pt, align=left, text=accent4!70] at (100, -15) {\#maze \#algorithm \#paths};
   \end{scope}
 \end{scope}
 
 % Row 4: Pattern & Geometric Systems
-\begin{scope}[shift={(440, 370)}]
-  \node[card-sub, font=\bfseries, text=accent4, anchor=west] at (0,0) {图案与几何系统 · PATTERN \& GEOMETRIC};
-  \draw[accent4!40, line width=0.5pt] (0,-6) -- (720,-6);
+\begin{scope}[shift={(440, 572)}]
+  \node[card-sub, font=\bfseries, text=accent4, anchor=west] at (0,0) {图案与几何系统 · PA\kern0.7ptTTERN \& GEOMETRIC};
+  \draw[accent4!40, line width=0.5pt] (0,-7) -- (700,-7);
 
   % Topography
-  \begin{scope}[shift={(0,-55)}]
-    \fill[midbg] (0,-45) rectangle (220, 25);
-    \draw[bordercol] (0,-45) rectangle (220, 25);
-    % Mini visual: contour lines
-    \foreach \l in {0,5,...,35} {
-      \draw[accent2!50, line width=0.4pt]
-        plot[domain=5:95, samples=30] (\x, {-20 + sin(\x*0.15 + \l*0.3)*8 + (\l-18)*0.6});
+  \begin{scope}[shift={(0,-50)}]
+    \fill[midbg] (0,-44) rectangle (214, 24);
+    \draw[bordercol] (0,-44) rectangle (214, 24);
+    % Mini visual: dotted contour lines (non-crossing)
+    \foreach \l in {0,1,...,4} {
+      \foreach \j in {0,1,...,11} {
+        \fill[accent2!55] ({7+\j*7.6}, {-36+\l*7+2*sin(\j*30)}) circle (0.8pt);
+      }
     }
-    \node[font=\bfseries\small, text=lighttext, anchor=west] at (110, 8) {地形图 Topography};
-    \node[tiny-text, anchor=west] at (110, -8) {噪声等值线 · 42 层等高};
-    \node[tiny-text, anchor=west, text=accent2!70] at (110, -28) {\#contour \#noise \#terrain};
+    \node[font=\bfseries\small, text=lighttext, anchor=west] at (100, 8) {地形图 T\kern0.7ptopography};
+    \node[tiny-text, anchor=west] at (100, -8) {噪声等值线 · 42 层等高};
+    \node[tiny-text, anchor=north west, text width=104pt, align=left, text=accent2!70] at (100, -15) {\#contour \#noise \#terrain};
   \end{scope}
 
   % Tapestry
-  \begin{scope}[shift={(240,-55)}]
-    \fill[midbg] (0,-45) rectangle (220, 25);
-    \draw[bordercol] (0,-45) rectangle (220, 25);
-    % Mini visual: tapestry tiles
-    \foreach \x in {0,1,...,6} {
-      \foreach \y in {0,1,...,3} {
-        \pgfmathtruncatemacro\mya{mod(\x+\y,3)}
-        \ifnum\mya=0
-          \draw[primary!50, line width=0.4pt] (\x*14+13, \y*(-10)-18) arc (180:360:7pt and 3pt);
-        \fi
-        \pgfmathtruncatemacro\myb{mod(\x*\y,4)}
-        \ifnum\myb=0
-          \draw[accent1!50, line width=0.3pt] (\x*14+6, \y*(-10)-30) -- (\x*14+20, \y*(-10)-10);
+  \begin{scope}[shift={(232,-50)}]
+    \fill[midbg] (0,-44) rectangle (214, 24);
+    \draw[bordercol] (0,-44) rectangle (214, 24);
+    % Mini visual: woven tile checker (filled, no strokes)
+    \foreach \x in {0,1,...,5} {
+      \foreach \y in {0,1,2} {
+        \pgfmathtruncatemacro\m{mod(\x+\y,2)}
+        \ifnum\m=0
+          \fill[primary!45] ({\x*14+8}, {\y*(-11)-6}) rectangle ({\x*14+18}, {\y*(-11)-14});
+        \else
+          \fill[accent1!40] ({\x*14+8}, {\y*(-11)-6}) rectangle ({\x*14+18}, {\y*(-11)-14});
         \fi
       }
     }
-    \node[font=\bfseries\small, text=lighttext, anchor=west] at (110, 8) {挂毯纹样 Tapestry};
-    \node[tiny-text, anchor=west] at (110, -8) {24×12 纺织语法 · 模块组合};
-    \node[tiny-text, anchor=west, text=primary!70] at (110, -28) {\#pattern \#tiles \#textile};
+    \node[font=\bfseries\small, text=lighttext, anchor=west] at (100, 8) {挂毯纹样 T\kern0.7ptapestry};
+    \node[tiny-text, anchor=west] at (100, -8) {24×12 纺织语法 · 模块组合};
+    \node[tiny-text, anchor=north west, text width=104pt, align=left, text=primary!70] at (100, -15) {\#pattern \#tiles \#textile};
   \end{scope}
 
   % Tiling
-  \begin{scope}[shift={(480,-55)}]
-    \fill[midbg] (0,-45) rectangle (240, 25);
-    \draw[bordercol] (0,-45) rectangle (240, 25);
-    % Mini visual: quasicrystal tiling rhombi
-    \foreach \r in {0,1,...,5} {
-      \foreach \i in {0,3,...,360} {
-        \pgfmathsetmacro\angle{\i + \r*15}
-        \pgfmathsetmacro\radius{\r*12}
-        \pgfmathsetmacro\x{60 + cos(\angle)*\radius}
-        \pgfmathsetmacro\y{-20 + sin(\angle)*\radius*0.8}
-        \draw[accent4!40, line width=0.3pt] (\x pt, \y pt) -- +(\angle+54:8pt) -- +(\angle+126:8pt);
-      }
+  \begin{scope}[shift={(464,-50)}]
+    \fill[midbg] (0,-44) rectangle (236, 24);
+    \draw[bordercol] (0,-44) rectangle (236, 24);
+    % Mini visual: fivefold ring of separated rhombi
+    \foreach \i in {0,72,...,288} {
+      \pgfmathsetmacro\cx{46+20*cos(\i)}
+      \pgfmathsetmacro\cy{-14+14*sin(\i)}
+      \fill[accent4!45] ({\cx+3.5}, \cy) -- (\cx, {\cy+2.5}) -- ({\cx-3.5}, \cy) -- (\cx, {\cy-2.5}) -- cycle;
     }
-    \node[font=\bfseries\small, text=lighttext, anchor=west] at (115, 8) {准晶平铺 Tiling};
-    \node[tiny-text, anchor=west] at (115, -8) {五重对称菱形 · 11 环};
-    \node[tiny-text, anchor=west, text=accent4!70] at (115, -28) {\#tiling \#geometry \#symmetry};
+    \fill[accent4!70] (46,-14) circle (1.5pt);
+    \node[font=\bfseries\small, text=lighttext, anchor=west] at (100, 8) {准晶平铺 Tiling};
+    \node[tiny-text, anchor=west] at (100, -8) {五重对称菱形 · 11 环};
+    \node[tiny-text, anchor=north west, text width=126pt, align=left, text=accent4!70] at (100, -15) {\#tiling \#geometry \#symmetry};
   \end{scope}
 \end{scope}
 
 % === ARCHITECTURE DIAGRAM: 渲染管线 ===
-\node[card-title, anchor=west] at (440, 290) {渲染与测试管线};
-\draw[bordercol, line width=0.5pt] (440,280) -- (1140,280);
+\node[card-title, anchor=west] at (440, 441) {渲染与测试管线};
+\draw[bordercol, line width=0.5pt] (440,431) -- (1140,431);
 
-% Pipeline diagram
-\begin{scope}[shift={(440, 260)}]
+% Pipeline diagram (fits 440..1140, rows end above the catalog section)
+\begin{scope}[shift={(440, 409)}]
   % Box 1: Source Code
-  \fill[midbg] (0,-70) rectangle (130, 10);
-  \draw[accent3] (0,-70) rectangle (130, 10);
-  \node[font=\bfseries\small, text=accent3] at (65, -10) {源代码};
-  \node[tiny-text, text width=110pt] at (65, -35) {src/main.ts\\12 个渲染函数\\统一调色板};
-  \node[tiny-text] at (65, -60) {p5.js + TypeScript};
+  \fill[midbg] (0,-70) rectangle (136, 10);
+  \draw[accent3] (0,-70) rectangle (136, 10);
+  \node[font=\bfseries\small, text=accent3] at (68, -10) {源代码};
+  \node[tiny-text, text width=118pt] at (68, -35) {src/main.ts\\12 个渲染函数\\统一调色板};
+  \node[tiny-text] at (68, -60) {p5.js + TypeScript};
 
   % Arrow 1->2
-  \draw[arrow-flow] (140, -30) -- (180, -30);
-  \node[tiny-text, text=accent2, anchor=south] at (160, -28) {Vite 构建};
+  \draw[arrow-flow] (136, -30) -- (188, -30);
+  \node[tiny-text, text=accent2, anchor=south] at (162, -25) {Vite 构建};
 
   % Box 2: Vite Build
-  \fill[midbg] (190,-70) rectangle (320, 10);
-  \draw[accent2] (190,-70) rectangle (320, 10);
-  \node[font=\bfseries\small, text=accent2] at (255, -10) {构建产物};
-  \node[tiny-text, text width=110pt] at (255, -35) {dist/index.html\\静态资源\\可直接部署};
-  \node[tiny-text] at (255, -60) {vite build};
+  \fill[midbg] (188,-70) rectangle (324, 10);
+  \draw[accent2] (188,-70) rectangle (324, 10);
+  \node[font=\bfseries\small, text=accent2] at (256, -10) {构建产物};
+  \node[tiny-text, text width=118pt] at (256, -35) {dist/index.html\\静态资源\\可直接部署};
+  \node[tiny-text] at (256, -60) {vite build};
 
   % Arrow 2->3
-  \draw[arrow-flow] (330, -30) -- (370, -30);
-  \node[tiny-text, text=accent2, anchor=south] at (350, -28) {本地服务};
+  \draw[arrow-flow] (324, -30) -- (376, -30);
+  \node[tiny-text, text=accent2, anchor=south] at (350, -25) {本地服务};
 
   % Box 3: Dev Server
-  \fill[midbg] (380,-70) rectangle (510, 10);
-  \draw[primary] (380,-70) rectangle (510, 10);
-  \node[font=\bfseries\small, text=primary] at (445, -10) {HTTP 服务};
-  \node[tiny-text, text width=110pt] at (445, -35) {127.0.0.1:4174\\?scene= 参数切换\\离线渲染};
-  \node[tiny-text] at (445, -60) {vite preview};
+  \fill[midbg] (376,-70) rectangle (512, 10);
+  \draw[primary] (376,-70) rectangle (512, 10);
+  \node[font=\bfseries\small, text=primary] at (444, -10) {HTTP 服务};
+  \node[tiny-text, text width=118pt] at (444, -35) {127.0.0.1:4174\\?scene= 参数切换\\离线渲染};
+  \node[tiny-text] at (444, -60) {vite preview};
 
   % Arrow 3->4
-  \draw[arrow-flow] (520, -30) -- (560, -30);
-  \node[tiny-text, text=accent2, anchor=south] at (540, -28) {Playwright};
+  \draw[arrow-flow] (512, -30) -- (564, -30);
+  \node[tiny-text, text=accent2, anchor=south] at (538, -25) {Playwright};
 
   % Box 4: Headless Chrome
-  \fill[midbg] (570,-70) rectangle (700, 10);
-  \draw[accent4] (570,-70) rectangle (700, 10);
-  \node[font=\bfseries\small, text=accent4] at (635, -10) {无头浏览器};
-  \node[tiny-text, text width=110pt] at (635, -35) {Chrome / SwiftShader\\等待 \_\_VIS\_READY\_\_\\鼠标交互验证};
-  \node[tiny-text] at (635, -60) {playwright-core};
+  \fill[midbg] (564,-70) rectangle (700, 10);
+  \draw[accent4] (564,-70) rectangle (700, 10);
+  \node[font=\bfseries\small, text=accent4] at (632, -10) {无头浏览器};
+  \node[tiny-text, text width=118pt] at (632, -35) {Chrome / SwiftShader\\等待 \_\_VIS\_READY\_\_\\鼠标交互验证};
+  \node[tiny-text] at (632, -60) {playwright-core};
 
   % Arrow 4->5 (down)
-  \draw[arrow-data] (635, -75) -- (635, -100);
-  \node[tiny-text, text=accent1, anchor=west] at (640, -88) {截图输出};
+  \draw[arrow-data] (632, -70) -- (632, -103);
+  \node[tiny-text, text=accent1, anchor=west] at (638, -86) {截图输出};
 
-  % Box 5: PNG Output
-  \fill[midbg] (440,-160) rectangle (700, -105);
-  \draw[accent1] (440,-160) rectangle (700, -105);
-  \node[font=\bfseries\small, text=accent1] at (570, -122) {透明 PNG 输出};
-  \node[tiny-text, text width=230pt] at (570, -145) {out/*.png · 1400×900 · Alpha 通道保留 · omitBackground};
+  % Box 5: PNG Output (under box 4, serpentine flow)
+  \fill[midbg] (252,-158) rectangle (700, -103);
+  \draw[accent1] (252,-158) rectangle (700, -103);
+  \node[font=\bfseries\small, text=accent1] at (476, -114) {透明 PNG 输出};
+  \node[tiny-text, text width=420pt] at (476, -137) {out/*.png · 1400×900 · Alpha 通道保留 · omitBackground};
 
-  % Arrow 5->6 (right-down)
-  \draw[arrow-data] (710, -132) -- (780, -132);
-  \node[tiny-text, text=accent1, anchor=south] at (745, -130) {像素校验};
+  % Arrow 5->6 (right-to-left)
+  \draw[arrow-data] (252, -130) -- (188, -130);
+  \node[tiny-text, text=accent1, anchor=south] at (220, -125) {像素校验};
 
   % Box 6: Validation
-  \fill[midbg] (790,-160) rectangle (1000, -105);
-  \draw[accent2] (790,-160) rectangle (1000, -105);
-  \node[font=\bfseries\small, text=accent2] at (895, -122) {像素级验证};
-  \node[tiny-text, text width=190pt] at (895, -145) {pngjs · 透明占比 · 可见像素 · 彩色像素阈值};
+  \fill[midbg] (0,-158) rectangle (188, -103);
+  \draw[accent2] (0,-158) rectangle (188, -103);
+  \node[font=\bfseries\small, text=accent2] at (94, -114) {像素级验证};
+  \node[tiny-text, text width=168pt] at (94, -137) {pngjs · 透明占比 · 可见像素 · 彩色像素阈值};
 \end{scope}
 
 % === CATALOG METADATA ===
-\node[card-title, anchor=west] at (440, 100) {可检索目录};
-\draw[bordercol, line width=0.5pt] (440,90) -- (1140,90);
+\node[card-title, anchor=west] at (440, 219) {可检索目录};
+\draw[bordercol, line width=0.5pt] (440,209) -- (1140,209);
 
-\begin{scope}[shift={(440, 75)}]
-  \node[body-text, text width=680pt, anchor=north west] at (0,0) {
-    \texttt{catalog.json} 为每件作品定义标准化元数据，支持按\textbf{\textcolor{accent2}{用途}}、\textbf{\textcolor{primary}{家族}}、\textbf{\textcolor{accent1}{核心问题}}、\textbf{\textcolor{accent3}{复杂度}}和\textbf{\textcolor{accent4}{技术标签}}进行检索。
-  };
+\node[body-text, text width=680pt, anchor=north west] at (440, 195) {
+  \texttt{catalog.json} 为每件作品定义标准化元数据，支持按\textbf{\textcolor{accent2}{用途}}、\textbf{\textcolor{primary}{家族}}、\textbf{\textcolor{accent1}{核心问题}}、\textbf{\textcolor{accent3}{复杂度}}和\textbf{\textcolor{accent4}{技术标签}}进行检索。
+};
 
-  % Sample catalog entry
-  \fill[midbg] (0,-50) rectangle (700, -20);
-  \draw[bordercol] (0,-50) rectangle (700, -20);
-  \node[tiny-text, anchor=west, font=\ttfamily, text=accent2] at (15, -35) {
-    \{ id: "flow-field", use: "particle systems", family: "particle systems",
-  };
-  \node[tiny-text, anchor=west, font=\ttfamily, text=mutetext] at (15, -47) {
-    \quad question: "What trajectories emerge from a seeded curl-like field?", tags: ["noise","particles","flow"] \}
-  };
-\end{scope}
+% Sample catalog entry
+\fill[midbg] (620,116) rectangle (1140, 160);
+\draw[bordercol] (620,116) rectangle (1140, 160);
+\node[tiny-text, anchor=west, font=\ttfamily, text=accent2] at (635, 148) {
+  \{ id: "flow-field", use: "particle systems", family: "particle systems",
+};
+\node[tiny-text, anchor=west, font=\ttfamily, text=mutetext] at (635, 136) {
+  \quad question: "What trajectories emerge from a seeded curl-like field?",
+};
+\node[tiny-text, anchor=west, font=\ttfamily, text=mutetext] at (635, 124) {
+  \quad tags: ["noise","particles","flow"] \}
+};
 
 % === FOOTER ===
-\draw[bordercol, line width=0.5pt] (60,40) -- (1140,40);
-
-\node[tiny-text, anchor=west] at (60, 22) {
+\node[tiny-text, anchor=west] at (620, 24) {
   generative-art-demos · 确定性生成艺术参考库 · 固定种子可复现输出
 };
-\node[tiny-text, anchor=east] at (1140, 22) {
+\node[tiny-text, anchor=east] at (1140, 24) {
   \textcolor{primary}{/} \textcolor{accent1}{/} \textcolor{accent2}{/} \textcolor{accent3}{/} \textcolor{accent4}{/}  \quad 12 scenes · 5-color palette · seed: 42
 };
 
