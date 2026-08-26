@@ -1,0 +1,160 @@
+{
+  "id": "generative-art-demos-architecture-infographic",
+  "title": "生成式艺术演示集 架构信息图",
+  "project": "generative-art-demos",
+  "project_path": "~/projects/plot/generative-art-demos",
+  "language": "zh-CN",
+  "thesis": "generative-art-demos 是一个包含 12 件确定性 p5.js 透明 PNG 作品的生成式艺术参考库，通过 TypeScript + Vite + Playwright 构建端到端可复现、可验证的渲染管线。",
+  "narrative_sections": [
+    { "id": "header", "role": "title", "content": "生成式艺术演示集 · 12 个确定性 p5.js 透明 PNG 作品" },
+    { "id": "overview", "role": "overview", "content": "项目定位、关键指标（12 作品 / 5 色系 / 1400px 输出）" },
+    { "id": "tech-stack", "role": "supporting", "content": "核心技术栈：p5.js、TypeScript、Vite、Playwright、pngjs" },
+    { "id": "testing", "role": "supporting", "content": "自动化验证流程：类型检查 → 构建 → 无头渲染 → 像素校验 → 交互验证" },
+    { "id": "gallery", "role": "hero", "content": "12 件作品按 4 大家族分类：粒子与场系统、递归与动力系统、空间与结构系统、图案与几何系统" },
+    { "id": "pipeline", "role": "mechanism", "content": "渲染与测试管线：源代码 → Vite 构建 → HTTP 服务 → 无头浏览器 → 透明 PNG → 像素级验证" },
+    { "id": "catalog", "role": "supporting", "content": "catalog.json 可检索目录，按用途/家族/问题/复杂度/标签索引" }
+  ],
+  "evidence": [
+    {
+      "id": "scene-count",
+      "claim": "12 件生成艺术作品",
+      "source": "catalog.json 数组长度",
+      "value": 12,
+      "unit": "scenes"
+    },
+    {
+      "id": "palette-count",
+      "claim": "5 种主题色",
+      "source": "src/main.ts palette 数组",
+      "value": 5,
+      "unit": "colors"
+    },
+    {
+      "id": "canvas-size",
+      "claim": "1400×900 像素画布",
+      "source": "src/main.ts W=1400, H=900",
+      "value": "1400x900",
+      "unit": "px"
+    },
+    {
+      "id": "seed-fix",
+      "claim": "固定随机种子 seed=42",
+      "source": "src/main.ts randomSeed(42), noiseSeed(42)",
+      "value": 42,
+      "unit": "seed"
+    },
+    {
+      "id": "quality-gate-transparent",
+      "claim": "透明度 > 8%",
+      "source": "scripts/capture.mjs 像素校验",
+      "value": 0.08,
+      "unit": "ratio",
+      "transformation": "transparent_pixels / total_pixels > 0.08"
+    },
+    {
+      "id": "quality-gate-visible",
+      "claim": "可见像素 > 3.5%",
+      "source": "scripts/capture.mjs 像素校验",
+      "value": 0.035,
+      "unit": "ratio",
+      "transformation": "visible_pixels / total_pixels > 0.035"
+    },
+    {
+      "id": "quality-gate-colorful",
+      "claim": "彩色像素 > 2500",
+      "source": "scripts/capture.mjs 像素校验",
+      "value": 2500,
+      "unit": "pixels",
+      "transformation": "count of pixels where alpha>20 and max(r,g,b)-min(r,g,b)>24"
+    },
+    {
+      "id": "families",
+      "claim": "4 个作品家族",
+      "source": "catalog.json family 字段去重",
+      "value": 4,
+      "unit": "families",
+      "families": [
+        "particle systems / simulation / wave systems",
+        "recursive systems / dynamical systems / agent systems",
+        "constraint systems / spatial subdivision / algorithmic structure",
+        "scalar fields / pattern systems / geometric systems"
+      ]
+    }
+  ],
+  "visual_contract": {
+    "audience": "对生成式艺术、创意编程、p5.js 生态感兴趣的开发者和设计师",
+    "medium": "静态矢量信息图",
+    "dimensions_pt": { "width": 1200, "height": 900 },
+    "palette": {
+      "primary": "#ff6f91",
+      "accent1": "#ffd166",
+      "accent2": "#54d6c6",
+      "accent3": "#7b9cff",
+      "accent4": "#ba8cff",
+      "dark_bg": "#0f1e2d",
+      "mid_bg": "#1a2f44",
+      "light_text": "#e8f4fc",
+      "mute_text": "#89a6bb"
+    },
+    "typography": "CTEX fandol 中文 + TikZ 默认无衬线",
+    "reading_path": "自顶向下，左栏概览 + 右栏作品画廊与管线"
+  },
+  "files": {
+    "source_tex": {
+      "filename": "architecture-infographic.tex",
+      "size_bytes": 21021,
+      "sha256": "b2aab8a9c1e079f2fbb60fe43db83849621399aba48d937723724753c2de80a6",
+      "description": "TikZ/LaTeX 可编辑源文件"
+    },
+    "pdf": {
+      "filename": "architecture-infographic.pdf",
+      "size_bytes": 210000,
+      "sha256": "768d1abb4422eb1abcd70066b858789df357321870479c111d63e59b0acf3a87",
+      "pages": 1,
+      "description": "PDF 矢量输出，适合打印和高清显示"
+    },
+    "svg": {
+      "filename": "architecture-infographic.svg",
+      "size_bytes": 2200000,
+      "sha256": "c148525ece4f28ec953dcbb9891c9b437e9b6f9ff55fe9004713f4139b777e0c",
+      "width_px": 1435,
+      "height_px": 897,
+      "description": "SVG 矢量输出，可嵌入网页"
+    },
+    "png": {
+      "filename": "architecture-infographic.png",
+      "size_bytes": 673000,
+      "sha256": "ac22e39422a91fc85d2ed010c08f792734464f8cca2051ab2e7f97e4561527e6",
+      "width_px": 2990,
+      "height_px": 1869,
+      "dpi": 150,
+      "description": "PNG 位图输出，150 DPI，深色背景"
+    }
+  },
+  "build": {
+    "tex_engine": "xelatex",
+    "tex_options": "-interaction=nonstopmode",
+    "ctex_fontset": "fandol",
+    "svg_converter": "pdf2svg",
+    "png_converter": "ImageMagick (magick)",
+    "png_density": 150,
+    "commands": [
+      "xelatex -interaction=nonstopmode architecture-infographic.tex",
+      "pdf2svg architecture-infographic.pdf architecture-infographic.svg",
+      "magick -density 150 architecture-infographic.pdf -background '#0f1e2d' -flatten architecture-infographic.png"
+    ]
+  },
+  "verification": {
+    "pdf_generated": true,
+    "svg_generated": true,
+    "png_generated": true,
+    "chinese_rendered": true,
+    "no_text_overflow": true,
+    "no_clip": true,
+    "all_12_scenes_depicted": true,
+    "pipeline_depicted": true,
+    "catalog_meta_depicted": true
+  },
+  "generated_at": "2026-08-24",
+  "schema_version": 1
+}

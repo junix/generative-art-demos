@@ -1,0 +1,879 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Generative Art Demos · 架构文档</title>
+<style>
+  :root{
+    --bg:#fafbfc;
+    --ink:#1a2a3a;
+    --ink-2:#3a5166;
+    --ink-3:#6b86a0;
+    --line:#d8e2ec;
+    --accent:#2b7ad6;
+    --accent-2:#54d6c6;
+    --accent-3:#ff6f91;
+    --accent-4:#ffd166;
+    --accent-5:#ba8cff;
+    --card:#ffffff;
+    --code-bg:#f0f4f8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;line-height:1.7;font-size:16px}
+  .container{max-width:960px;margin:0 auto;padding:48px 32px 96px}
+
+  /* 顶部产品介绍 */
+  .hero{padding:56px 0 48px;border-bottom:1px solid var(--line);margin-bottom:48px}
+  .hero .kicker{font-size:13px;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;font-weight:600;margin-bottom:12px}
+  .hero h1{font-size:38px;line-height:1.25;font-weight:700;margin-bottom:16px;letter-spacing:-.01em}
+  .hero .subtitle{font-size:18px;color:var(--ink-2);line-height:1.7;max-width:720px}
+  .hero .meta{margin-top:24px;display:flex;gap:24px;flex-wrap:wrap}
+  .hero .meta span{font-size:13px;color:var(--ink-3);background:var(--card);border:1px solid var(--line);padding:6px 14px;border-radius:999px}
+
+  /* 章节 */
+  section{margin-bottom:64px}
+  h2{font-size:24px;font-weight:700;margin-bottom:8px;padding-bottom:8px;border-bottom:2px solid var(--ink);display:inline-block;letter-spacing:-.01em}
+  h2 .num{color:var(--accent);font-weight:600;margin-right:8px;font-size:18px;vertical-align:2px}
+  .lead{color:var(--ink-2);margin-bottom:28px;font-size:16px;max-width:720px}
+
+  /* 功能列表 */
+  .features{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .feature{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;transition:transform .2s,box-shadow .2s}
+  .feature:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(26,42,58,.06)}
+  .feature .icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px}
+  .feature h3{font-size:15px;font-weight:600;margin-bottom:6px;color:var(--ink)}
+  .feature p{font-size:13.5px;color:var(--ink-3);line-height:1.6}
+  .f1 .icon{background:#e6f3ff;color:var(--accent)}
+  .f2 .icon{background:#e0faf5;color:#0f9e8a}
+  .f3 .icon{background:#ffe8ef;color:#d63762}
+  .f4 .icon{background:#fff6d6;color:#b89100}
+  .f5 .icon{background:#f0e6ff;color:#7a4cd6}
+  .f6 .icon{background:#e6f3ff;color:var(--accent)}
+
+  /* 架构图容器 */
+  .diagram-wrap{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:32px;margin:24px 0 28px;overflow:hidden;position:relative}
+  .diagram-title{font-size:13px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:16px}
+  svg.diagram{width:100%;height:auto;display:block}
+
+  /* 解释文本 */
+  .prose{color:var(--ink-2);font-size:15.5px;line-height:1.8}
+  .prose p{margin-bottom:14px}
+  .prose p:last-child{margin-bottom:0}
+  .prose strong{color:var(--ink);font-weight:600}
+  .prose code{background:var(--code-bg);padding:2px 7px;border-radius:5px;font-size:13.5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--accent)}
+
+  /* 主走查 */
+  .walkthrough-steps{display:flex;flex-direction:column;gap:0;position:relative;margin:24px 0 28px}
+  .walkthrough-steps::before{content:'';position:absolute;left:22px;top:8px;bottom:8px;width:2px;background:linear-gradient(to bottom,var(--accent),var(--accent-5));opacity:.3}
+  .step{display:flex;gap:20px;padding:14px 0;position:relative}
+  .step-num{flex-shrink:0;width:44px;height:44px;border-radius:50%;background:var(--card);border:2px solid var(--accent);color:var(--accent);font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;z-index:1;transition:all .3s}
+  .step.active .step-num{background:var(--accent);color:#fff;box-shadow:0 0 0 6px rgba(43,122,214,.15)}
+  .step-body{flex:1;padding-top:6px}
+  .step-body h4{font-size:16px;font-weight:600;margin-bottom:4px;color:var(--ink)}
+  .step-body p{font-size:14px;color:var(--ink-3);line-height:1.6}
+
+  /* 场景标签 */
+  .scene-tags{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 24px}
+  .scene-tag{font-size:12.5px;padding:4px 12px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--ink-2)}
+
+  /* 目录 / 编号清单 */
+  .catalog-list{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+  .catalog-item{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:13px}
+  .catalog-item .id{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--accent);font-weight:600;font-size:12px}
+  .catalog-item .name{color:var(--ink);font-weight:500;margin-top:2px}
+  .catalog-item .tag{font-size:11px;color:var(--ink-3);margin-top:4px}
+
+  /* 底部 */
+  footer{margin-top:80px;padding-top:32px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-3);text-align:center}
+
+  /* 打印样式 */
+  @media print{
+    body{background:#fff}
+    .container{padding:24px;max-width:100%}
+    .hero{padding:24px 0;margin-bottom:24px;border-bottom:2px solid #333}
+    section{break-inside:avoid;margin-bottom:32px}
+    .diagram-wrap{box-shadow:none;break-inside:avoid;padding:16px;border:1px solid #ccc}
+    .feature:hover{transform:none;box-shadow:none}
+    .hero .meta span{background:#fff}
+    .step-num{background:#fff!important;color:#333!important;border-color:#333!important}
+    .step.active .step-num{background:#333!important;color:#fff!important;box-shadow:none}
+    section{page-break-inside:avoid}
+  }
+
+  /* reduced motion */
+  @media (prefers-reduced-motion: reduce){
+    .feature{transition:none}
+    .step-num{transition:none}
+    svg *{animation-duration:0s!important;animation-iteration-count:1!important;transition-duration:0s!important}
+  }
+
+  @media (max-width:720px){
+    .features{grid-template-columns:1fr}
+    .catalog-list{grid-template-columns:repeat(2,1fr)}
+    .container{padding:24px 16px 48px}
+    .hero h1{font-size:28px}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- 产品介绍 -->
+  <div class="hero">
+    <div class="kicker">Generative Art Demos</div>
+    <h1>十二幅确定性生成艺术作品的<br>单文件演示集合</h1>
+    <p class="subtitle">
+      基于 p5.js 与 TypeScript 的生成艺术演示项目——每一幅作品都是一份"一次性渲染、输出透明 PNG"的成品构图，
+      而非持续循环的动画。通过 URL 参数切换场景，由 Playwright 驱动的无头浏览器完成像素级质量校验。
+    </p>
+    <div class="meta">
+      <span>p5.js 2.2.3</span>
+      <span>TypeScript 5.9</span>
+      <span>Vite 8</span>
+      <span>12 个场景</span>
+      <span>离线测试</span>
+    </div>
+  </div>
+
+  <!-- 功能列表 -->
+  <section>
+    <h2><span class="num">01</span>核心特性</h2>
+    <p class="lead">这个项目既是生成艺术作品集，也是一套可验证的前端渲染流水线。</p>
+    <div class="features">
+      <div class="feature f1">
+        <div class="icon">🎨</div>
+        <h3>十二种生成范式</h3>
+        <p>覆盖流场、反应扩散、L-系统、奇异吸引子、圆堆积、四叉树、等高线、拼贴、群智能、干涉波、迷宫、准晶体铺砖等经典生成艺术算法。</p>
+      </div>
+      <div class="feature f2">
+        <div class="icon">🔍</div>
+        <h3>可检索目录</h3>
+        <p>catalog.json 按使用场景、算法家族、复杂度、技术标签四个维度组织场景，支持按用途快速筛选和引用。</p>
+      </div>
+      <div class="feature f3">
+        <div class="icon">🧪</div>
+        <h3>像素级质量测试</h3>
+        <p>通过 Playwright + pngjs 对每幅输出进行 RGBA 校验：透明像素占比、可见像素占比、彩色像素数量三重把关。</p>
+      </div>
+      <div class="feature f4">
+        <div class="icon">🎯</div>
+        <h3>确定性渲染</h3>
+        <p>所有场景共用相同的随机种子(42)与噪声种子，相同代码永远输出相同图像，适合基准测试与回归对比。</p>
+      </div>
+      <div class="feature f5">
+        <div class="icon">📸</div>
+        <h3>透明通道输出</h3>
+        <p>每幅作品都保留 Alpha 通道，可直接叠放于任意背景之上，作为素材嵌入其他设计或可视化项目。</p>
+      </div>
+      <div class="feature f6">
+        <div class="icon">🕹️</div>
+        <h3>交互契约验证</h3>
+        <p>测试脚本不仅截图，还模拟鼠标移动与点击，通过 <code>__INTERACTION_COUNT__</code> 全局标志确认事件回调实际触发。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 架构图1：系统总览 -->
+  <section>
+    <h2><span class="num">02</span>系统总览架构</h2>
+    <p class="lead">
+      项目由「开发/构建层」「渲染层」「测试层」三层构成，从源码到输出 PNG 形成完整闭环。
+      渲染层是核心，测试层则像一个独立的质检部门，负责从外部验证输出质量。
+    </p>
+
+    <div class="diagram-wrap">
+      <div class="diagram-title">图 1 · 三层架构总览</div>
+      <svg class="diagram" viewBox="0 0 860 380" xmlns="http://www.w3.org/2000/svg" id="diagram-overview">
+        <defs>
+          <linearGradient id="g-build" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#e6f3ff"/>
+            <stop offset="100%" stop-color="#c7e2ff"/>
+          </linearGradient>
+          <linearGradient id="g-render" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#e0faf5"/>
+            <stop offset="100%" stop-color="#b7f0e3"/>
+          </linearGradient>
+          <linearGradient id="g-test" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#ffe8ef"/>
+            <stop offset="100%" stop-color="#ffc9d8"/>
+          </linearGradient>
+          <marker id="arrow1" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#6b86a0"/>
+          </marker>
+        </defs>
+
+        <!-- 第一层：构建 -->
+        <rect x="40" y="30" width="240" height="130" rx="12" fill="url(#g-build)" stroke="#7ab5eb" stroke-width="1.5"/>
+        <text x="160" y="55" text-anchor="middle" font-size="14" font-weight="700" fill="#1a4a7a">构建层 · Build</text>
+        <g id="build-nodes">
+          <rect x="60" y="75" width="90" height="36" rx="6" fill="#fff" stroke="#7ab5eb" stroke-width="1.2"/>
+          <text x="105" y="98" text-anchor="middle" font-size="12" fill="#1a4a7a" font-family="ui-monospace, monospace">src/main.ts</text>
+          <rect x="170" y="75" width="90" height="36" rx="6" fill="#fff" stroke="#7ab5eb" stroke-width="1.2"/>
+          <text x="215" y="98" text-anchor="middle" font-size="12" fill="#1a4a7a" font-family="ui-monospace, monospace">p5.js</text>
+          <rect x="90" y="121" width="140" height="28" rx="6" fill="#fff" stroke="#7ab5eb" stroke-width="1.2"/>
+          <text x="160" y="140" text-anchor="middle" font-size="12" fill="#1a4a7a" font-family="ui-monospace, monospace">Vite 开发服务器</text>
+        </g>
+
+        <!-- 第二层：渲染 -->
+        <rect x="310" y="30" width="240" height="130" rx="12" fill="url(#g-render)" stroke="#58c4b0" stroke-width="1.5"/>
+        <text x="430" y="55" text-anchor="middle" font-size="14" font-weight="700" fill="#0c6e5e">渲染层 · Render</text>
+        <g id="render-nodes">
+          <rect x="330" y="75" width="90" height="36" rx="6" fill="#fff" stroke="#58c4b0" stroke-width="1.2"/>
+          <text x="375" y="98" text-anchor="middle" font-size="12" fill="#0c6e5e" font-family="ui-monospace, monospace">Canvas 画布</text>
+          <rect x="440" y="75" width="90" height="36" rx="6" fill="#fff" stroke="#58c4b0" stroke-width="1.2"/>
+          <text x="485" y="98" text-anchor="middle" font-size="12" fill="#0c6e5e" font-family="ui-monospace, monospace">12 渲染器</text>
+          <rect x="360" y="121" width="140" height="28" rx="6" fill="#fff" stroke="#58c4b0" stroke-width="1.2"/>
+          <text x="430" y="140" text-anchor="middle" font-size="12" fill="#0c6e5e">场景路由 (URL scene 参数)</text>
+        </g>
+
+        <!-- 第三层：测试 -->
+        <rect x="580" y="30" width="240" height="130" rx="12" fill="url(#g-test)" stroke="#e88aa3" stroke-width="1.5"/>
+        <text x="700" y="55" text-anchor="middle" font-size="14" font-weight="700" fill="#7a1f3a">测试层 · Test</text>
+        <g id="test-nodes">
+          <rect x="600" y="75" width="90" height="36" rx="6" fill="#fff" stroke="#e88aa3" stroke-width="1.2"/>
+          <text x="645" y="98" text-anchor="middle" font-size="12" fill="#7a1f3a" font-family="ui-monospace, monospace">Playwright</text>
+          <rect x="710" y="75" width="90" height="36" rx="6" fill="#fff" stroke="#e88aa3" stroke-width="1.2"/>
+          <text x="755" y="98" text-anchor="middle" font-size="12" fill="#7a1f3a" font-family="ui-monospace, monospace">pngjs</text>
+          <rect x="630" y="121" width="140" height="28" rx="6" fill="#fff" stroke="#e88aa3" stroke-width="1.2"/>
+          <text x="700" y="140" text-anchor="middle" font-size="12" fill="#7a1f3a">RGBA 质量校验</text>
+        </g>
+
+        <!-- 连接：构建→渲染 -->
+        <path d="M 280 135 L 308 135" stroke="#6b86a0" stroke-width="2" fill="none" marker-end="url(#arrow1)" class="flow-arrow" data-delay="0"/>
+
+        <!-- 连接：渲染→测试 -->
+        <path d="M 550 135 L 578 135" stroke="#6b86a0" stroke-width="2" fill="none" marker-end="url(#arrow1)" class="flow-arrow" data-delay="600"/>
+
+        <!-- 数据：catalog.json -->
+        <g id="catalog-box">
+          <rect x="350" y="200" width="160" height="56" rx="10" fill="#fff6d6" stroke="#d9b83e" stroke-width="1.5"/>
+          <text x="430" y="225" text-anchor="middle" font-size="13" font-weight="600" fill="#7a5c00">catalog.json</text>
+          <text x="430" y="244" text-anchor="middle" font-size="11" fill="#997722">场景元数据 · 12 项</text>
+        </g>
+        <path d="M 430 200 L 430 162" stroke="#6b86a0" stroke-width="1.5" fill="none" stroke-dasharray="4,3" class="flow-arrow" data-delay="300"/>
+
+        <!-- 输出：out/ -->
+        <g id="output-box">
+          <rect x="610" y="200" width="180" height="56" rx="10" fill="#f0e6ff" stroke="#a084d8" stroke-width="1.5"/>
+          <text x="700" y="225" text-anchor="middle" font-size="13" font-weight="600" fill="#4a2d8c">out/*.png</text>
+          <text x="700" y="244" text-anchor="middle" font-size="11" fill="#6a4db0">透明 PNG 成品 · 12 幅</text>
+        </g>
+        <path d="M 700 160 L 700 198" stroke="#6b86a0" stroke-width="2" fill="none" marker-end="url(#arrow1)" class="flow-arrow" data-delay="900"/>
+
+        <!-- 底部：脚本 -->
+        <g id="script-layer">
+          <rect x="40" y="290" width="780" height="68" rx="10" fill="#f5f7fa" stroke="#c8d4e0" stroke-width="1.2"/>
+          <text x="60" y="315" font-size="13" font-weight="600" fill="#3a5166">测试入口脚本</text>
+          <text x="60" y="336" font-size="12" fill="#6b86a0" font-family="ui-monospace, monospace">scripts/capture.mjs · 启动 Vite → 启动 Chromium → 逐场景截图 → 像素校验</text>
+          <text x="60" y="352" font-size="12" fill="#6b86a0">离线运行 · 拦截所有外部网络请求 · 保证测试环境纯净</text>
+        </g>
+
+        <!-- 脚本→构建层 -->
+        <path d="M 150 290 L 150 210 L 150 162" stroke="#6b86a0" stroke-width="1.5" fill="none" stroke-dasharray="4,3" class="flow-arrow" data-delay="1200"/>
+        <!-- 脚本→测试层 -->
+        <path d="M 700 290 L 700 258" stroke="#6b86a0" stroke-width="1.5" fill="none" stroke-dasharray="4,3" class="flow-arrow" data-delay="1500"/>
+      </svg>
+    </div>
+
+    <div class="prose">
+      <p>
+        <strong>构建层（Build Layer）</strong>负责把 TypeScript 源码打包为浏览器可执行的 ESM 模块。
+        Vite 在这里扮演两个角色：开发时是热更新服务器，测试时是被 Node 子进程启动的静态资源提供者。
+        入口文件 <code>src/main.ts</code> 只有 104 行，却把十二种生成算法全部内联其中——每个场景都是一个独立的函数。
+      </p>
+      <p>
+        <strong>渲染层（Render Layer）</strong>在浏览器 Canvas 上实际绘制图像。
+        场景路由通过 URL 的 <code>scene</code> 参数实现：渲染器字典 <code>{'flow-field': flowField, 'reaction': reaction, ...}</code>
+        将字符串 ID 映射到对应的绘制函数。所有场景都设置 <code>noLoop()</code>——只渲染一帧，完成后将
+        <code>window.__VIS_READY__</code> 置为 <code>true</code>，向外部测试脚本发出"渲染完成"信号。
+      </p>
+      <p>
+        <strong>测试层（Test Layer）</strong>是质量把关的关键。Playwright 驱动无头 Chromium 访问每个场景，
+        截图保存为带 Alpha 通道的 PNG。然后 pngjs 逐像素分析：透明像素比例需 &gt; 8%、可见像素 &gt; 3.5%、
+        彩色像素 &gt; 2500 个——三重阈值确保画面既不空白、也不满屏涂抹、且有足够的色彩层次。
+      </p>
+    </div>
+  </section>
+
+  <!-- 架构图2：场景渲染管线 -->
+  <section>
+    <h2><span class="num">03</span>场景渲染管线</h2>
+    <p class="lead">
+      单个场景从 URL 到像素输出的完整过程。这是一个线性管线：参数解析 → 画布初始化 → 算法绘制 → 完成标记。
+    </p>
+
+    <div class="diagram-wrap">
+      <div class="diagram-title">图 2 · 单场景渲染流程</div>
+      <svg class="diagram" viewBox="0 0 860 280" xmlns="http://www.w3.org/2000/svg" id="diagram-pipeline">
+        <defs>
+          <linearGradient id="p1" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#e6f3ff"/>
+            <stop offset="100%" stop-color="#d0e6ff"/>
+          </linearGradient>
+          <linearGradient id="p2" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#d0e6ff"/>
+            <stop offset="100%" stop-color="#e0faf5"/>
+          </linearGradient>
+          <linearGradient id="p3" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#e0faf5"/>
+            <stop offset="100%" stop-color="#e0faf5"/>
+          </linearGradient>
+          <linearGradient id="p4" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#e0faf5"/>
+            <stop offset="100%" stop-color="#fff6d6"/>
+          </linearGradient>
+          <linearGradient id="p5" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#fff6d6"/>
+            <stop offset="100%" stop-color="#f0e6ff"/>
+          </linearGradient>
+          <marker id="arrow-p" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#2b7ad6"/>
+          </marker>
+        </defs>
+
+        <!-- 步骤1：URL 参数解析 -->
+        <g class="pipe-step" data-step="0">
+          <rect x="30" y="60" width="140" height="80" rx="10" fill="url(#p1)" stroke="#7ab5eb" stroke-width="1.5"/>
+          <text x="100" y="88" text-anchor="middle" font-size="13" font-weight="700" fill="#1a4a7a">① URL 参数解析</text>
+          <text x="100" y="110" text-anchor="middle" font-size="11" fill="#3a70a8">URLSearchParams</text>
+          <text x="100" y="128" text-anchor="middle" font-size="11" fill="#3a70a8">scene=flow-field</text>
+        </g>
+
+        <!-- 步骤2：画布与种子初始化 -->
+        <g class="pipe-step" data-step="1">
+          <rect x="200" y="60" width="140" height="80" rx="10" fill="url(#p2)" stroke="#58c4b0" stroke-width="1.5"/>
+          <text x="270" y="88" text-anchor="middle" font-size="13" font-weight="700" fill="#0c6e5e">② 画布初始化</text>
+          <text x="270" y="110" text-anchor="middle" font-size="11" fill="#128874">1400 × 900</text>
+          <text x="270" y="128" text-anchor="middle" font-size="11" fill="#128874">randomSeed(42)</text>
+        </g>
+
+        <!-- 步骤3：渲染函数调度 -->
+        <g class="pipe-step" data-step="2">
+          <rect x="370" y="60" width="140" height="80" rx="10" fill="url(#p3)" stroke="#58c4b0" stroke-width="1.5"/>
+          <text x="440" y="88" text-anchor="middle" font-size="13" font-weight="700" fill="#0c6e5e">③ 渲染器调度</text>
+          <text x="440" y="110" text-anchor="middle" font-size="11" fill="#128874">12 选 1 字典</text>
+          <text x="440" y="128" text-anchor="middle" font-size="11" fill="#128874">renderers[scene]</text>
+        </g>
+
+        <!-- 步骤4：算法绘制 -->
+        <g class="pipe-step" data-step="3">
+          <rect x="540" y="40" width="160" height="120" rx="10" fill="url(#p4)" stroke="#d9b83e" stroke-width="1.5"/>
+          <text x="620" y="66" text-anchor="middle" font-size="13" font-weight="700" fill="#7a5c00">④ 算法绘制</text>
+          <text x="620" y="86" text-anchor="middle" font-size="11" fill="#997722">标题 + kicker</text>
+          <text x="620" y="103" text-anchor="middle" font-size="11" fill="#997722">核心生成循环</text>
+          <text x="620" y="120" text-anchor="middle" font-size="11" fill="#997722">装饰点缀元素</text>
+          <text x="620" y="137" text-anchor="middle" font-size="11" fill="#997722">noLoop() 停帧</text>
+        </g>
+
+        <!-- 步骤5：完成信号 -->
+        <g class="pipe-step" data-step="4">
+          <rect x="730" y="60" width="110" height="80" rx="10" fill="url(#p5)" stroke="#a084d8" stroke-width="1.5"/>
+          <text x="785" y="88" text-anchor="middle" font-size="13" font-weight="700" fill="#4a2d8c">⑤ 完成信号</text>
+          <text x="785" y="110" text-anchor="middle" font-size="11" fill="#6a4db0">__VIS_READY__</text>
+          <text x="785" y="128" text-anchor="middle" font-size="11" fill="#6a4db0">= true</text>
+        </g>
+
+        <!-- 连接线 -->
+        <path d="M 170 100 L 198 100" stroke="#2b7ad6" stroke-width="2.2" fill="none" marker-end="url(#arrow-p)" class="pipe-line" data-delay="0"/>
+        <path d="M 340 100 L 368 100" stroke="#2b7ad6" stroke-width="2.2" fill="none" marker-end="url(#arrow-p)" class="pipe-line" data-delay="400"/>
+        <path d="M 510 100 L 538 100" stroke="#2b7ad6" stroke-width="2.2" fill="none" marker-end="url(#arrow-p)" class="pipe-line" data-delay="800"/>
+        <path d="M 700 100 L 728 100" stroke="#2b7ad6" stroke-width="2.2" fill="none" marker-end="url(#arrow-p)" class="pipe-line" data-delay="1200"/>
+
+        <!-- 底部说明：交互契约 -->
+        <g id="interaction-box">
+          <rect x="280" y="200" width="300" height="56" rx="10" fill="#ffe8ef" stroke="#e88aa3" stroke-width="1.3" stroke-dasharray="5,3"/>
+          <text x="430" y="225" text-anchor="middle" font-size="12" font-weight="600" fill="#7a1f3a">🎯 交互契约</text>
+          <text x="430" y="244" text-anchor="middle" font-size="11" fill="#9e3a58">mouseMoved / mousePressed 递增 __INTERACTION_COUNT__</text>
+        </g>
+        <path d="M 440 160 Q 430 180 430 198" stroke="#e88aa3" stroke-width="1.5" fill="none" stroke-dasharray="3,3" class="pipe-line" data-delay="1600"/>
+      </svg>
+    </div>
+
+    <div class="prose">
+      <p>
+        每个场景的渲染都遵循完全相同的五步管线。<strong>第一步</strong>从 URL 查询参数中读取 <code>scene</code>，
+        默认值为 <code>flow-field</code>——即使参数缺失或拼写错误，也会回退到流场场景而不是白屏。
+      </p>
+      <p>
+        <strong>第二步</strong>创建 1400×900 的 Canvas 画布，并设置像素密度为 1（避免高清屏放大导致测试尺寸漂移）。
+        关键操作是 <code>randomSeed(42)</code> 与 <code>noiseSeed(42)</code>——这两个调用把所有随机性钉死在同一起点，
+        确保每次刷新输出完全相同的图像。
+      </p>
+      <p>
+        <strong>第三步</strong>通过对象字典进行渲染器分发。十二种算法函数各有各的绘制逻辑，但对外接口统一：
+        接收一个 <code>p5</code> 实例作为参数。这种"字典路由"模式比 switch-case 更易扩展，也便于测试遍历。
+      </p>
+      <p>
+        <strong>第四步</strong>是实际绘制，每个渲染器内部又分为三层：调用 <code>heading()</code> 绘制标题与副标题
+        （保持全系列视觉统一）、执行核心生成算法（差异最大的部分）、添加装饰性点缀（散布的小圆点等"设计调味"）。
+        最后调用 <code>noLoop()</code> 让 p5 停止动画循环——这是项目的核心设计选择：成品而非过程。
+      </p>
+      <p>
+        <strong>第五步</strong>设置全局完成标志 <code>__VIS_READY__ = true</code>，这是测试脚本等待的"就绪信号"。
+        此外还有一条并行的<strong>交互契约</strong>路径：鼠标移动和点击事件会递增 <code>__INTERACTION_COUNT__</code>，
+        测试脚本通过模拟鼠标操作后读取该值，验证交互事件确实被绑定和触发。
+      </p>
+    </div>
+  </section>
+
+  <!-- 主走查 -->
+  <section>
+    <h2><span class="num">04</span>主走查：流场渲染测试</h2>
+    <p class="lead">
+      选取最具代表性的"流场场景渲染测试"作为端到端走查场景。这是一条从命令行到像素校验的完整链路，
+      串联了构建层、渲染层、测试层的所有关键组件。
+    </p>
+
+    <div class="diagram-wrap">
+      <div class="diagram-title">图 3 · 主走查：流场场景端到端测试</div>
+      <svg class="diagram" viewBox="0 0 860 420" xmlns="http://www.w3.org/2000/svg" id="diagram-walkthrough">
+        <defs>
+          <marker id="arr-w" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#2b7ad6"/>
+          </marker>
+          <linearGradient id="wt-blue" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#e6f3ff"/>
+            <stop offset="100%" stop-color="#c7e2ff"/>
+          </linearGradient>
+          <linearGradient id="wt-teal" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#e0faf5"/>
+            <stop offset="100%" stop-color="#b7f0e3"/>
+          </linearGradient>
+          <linearGradient id="wt-pink" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#ffe8ef"/>
+            <stop offset="100%" stop-color="#ffc9d8"/>
+          </linearGradient>
+          <linearGradient id="wt-purple" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#f0e6ff"/>
+            <stop offset="100%" stop-color="#dbc8ff"/>
+          </linearGradient>
+          <linearGradient id="wt-yellow" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#fff6d6"/>
+            <stop offset="100%" stop-color="#ffe9a0"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Step 1: Node 启动 Vite -->
+        <g class="wt-step" data-step="0">
+          <rect x="40" y="30" width="180" height="72" rx="10" fill="url(#wt-blue)" stroke="#7ab5eb" stroke-width="1.5"/>
+          <text x="130" y="54" text-anchor="middle" font-size="12" font-weight="700" fill="#1a4a7a">① Node 启动 Vite</text>
+          <text x="130" y="74" text-anchor="middle" font-size="11" fill="#3a70a8">capture.mjs 子进程</text>
+          <text x="130" y="92" text-anchor="middle" font-size="11" fill="#3a70a8">端口 4174</text>
+        </g>
+
+        <!-- Step 2: Playwright 启动 Chromium -->
+        <g class="wt-step" data-step="1">
+          <rect x="280" y="30" width="180" height="72" rx="10" fill="url(#wt-blue)" stroke="#7ab5eb" stroke-width="1.5"/>
+          <text x="370" y="54" text-anchor="middle" font-size="12" font-weight="700" fill="#1a4a7a">② Playwright 启动</text>
+          <text x="370" y="74" text-anchor="middle" font-size="11" fill="#3a70a8">Chromium 无头模式</text>
+          <text x="370" y="92" text-anchor="middle" font-size="11" fill="#3a70a8">SwiftShader 渲染</text>
+        </g>
+
+        <!-- Step 3: 访问场景 URL -->
+        <g class="wt-step" data-step="2">
+          <rect x="520" y="30" width="180" height="72" rx="10" fill="url(#wt-teal)" stroke="#58c4b0" stroke-width="1.5"/>
+          <text x="610" y="54" text-anchor="middle" font-size="12" font-weight="700" fill="#0c6e5e">③ 访问场景 URL</text>
+          <text x="610" y="74" text-anchor="middle" font-size="11" fill="#128874">?scene=flow-field</text>
+          <text x="610" y="92" text-anchor="middle" font-size="11" fill="#128874">离线模式（拦截外网）</text>
+        </g>
+
+        <!-- Step 4: 等待渲染完成 -->
+        <g class="wt-step" data-step="3">
+          <rect x="730" y="30" width="100" height="72" rx="10" fill="url(#wt-teal)" stroke="#58c4b0" stroke-width="1.5"/>
+          <text x="780" y="54" text-anchor="middle" font-size="12" font-weight="700" fill="#0c6e5e">④ 等待就绪</text>
+          <text x="780" y="74" text-anchor="middle" font-size="11" fill="#128874">__VIS_READY__</text>
+          <text x="780" y="92" text-anchor="middle" font-size="11" fill="#128874">15s 超时</text>
+        </g>
+
+        <!-- 连接线 1→2→3→4 -->
+        <path d="M 220 66 L 278 66" stroke="#2b7ad6" stroke-width="2" fill="none" marker-end="url(#arr-w)" class="wt-line" data-delay="0"/>
+        <path d="M 460 66 L 518 66" stroke="#2b7ad6" stroke-width="2" fill="none" marker-end="url(#arr-w)" class="wt-line" data-delay="300"/>
+        <path d="M 700 66 L 728 66" stroke="#2b7ad6" stroke-width="2" fill="none" marker-end="url(#arr-w)" class="wt-line" data-delay="600"/>
+
+        <!-- 流场绘制示意 -->
+        <g id="flow-sample" transform="translate(260, 140)">
+          <rect x="0" y="0" width="340" height="180" rx="8" fill="#fafbfc" stroke="#c8d4e0" stroke-width="1"/>
+          <text x="170" y="24" text-anchor="middle" font-size="11" font-weight="600" fill="#3a5166">Canvas 绘制：220 条粒子轨迹 + 装饰圆</text>
+          <!-- 流场曲线示意 -->
+          <g stroke="#2b7ad6" stroke-width="1.2" fill="none" opacity="0.6" class="flow-curves">
+            <path d="M 20,50 Q 80,30 120,60 T 220,55 T 320,65"/>
+            <path d="M 20,75 Q 90,55 130,85 T 240,80 T 320,90"/>
+            <path d="M 20,100 Q 80,80 140,110 T 250,105 T 320,115"/>
+            <path d="M 20,125 Q 100,105 150,135 T 260,130 T 320,140"/>
+            <path d="M 20,150 Q 70,130 120,160 T 200,155 T 320,165"/>
+          </g>
+          <!-- 装饰圆 -->
+          <g fill="#ff6f91" opacity="0.5" class="flow-dots">
+            <circle cx="60" cy="45" r="3"/>
+            <circle cx="180" cy="70" r="2"/>
+            <circle cx="280" cy="95" r="4"/>
+            <circle cx="100" cy="120" r="2.5"/>
+            <circle cx="240" cy="145" r="3"/>
+            <circle cx="300" cy="40" r="2"/>
+          </g>
+        </g>
+
+        <!-- 向下箭头：从 step4 到 canvas -->
+        <path d="M 780 102 L 780 138 Q 780 140 778 140 L 600 140" stroke="#2b7ad6" stroke-width="2" fill="none" marker-end="url(#arr-w)" class="wt-line" data-delay="900"/>
+
+        <!-- Step 5: 截图 + 交互验证 -->
+        <g class="wt-step" data-step="4">
+          <rect x="40" y="360" width="380" height="48" rx="10" fill="url(#wt-pink)" stroke="#e88aa3" stroke-width="1.5"/>
+          <text x="230" y="380" text-anchor="middle" font-size="13" font-weight="700" fill="#7a1f3a">⑤ 截图 + 交互验证</text>
+          <text x="230" y="400" text-anchor="middle" font-size="11" fill="#9e3a58">omitBackground 透明 PNG · 模拟鼠标移动 · 计数对比</text>
+        </g>
+
+        <!-- Step 6: pngjs 像素校验 -->
+        <g class="wt-step" data-step="5">
+          <rect x="460" y="360" width="360" height="48" rx="10" fill="url(#wt-purple)" stroke="#a084d8" stroke-width="1.5"/>
+          <text x="640" y="380" text-anchor="middle" font-size="13" font-weight="700" fill="#4a2d8c">⑥ pngjs 像素三重校验</text>
+          <text x="640" y="400" text-anchor="middle" font-size="11" fill="#6a4db0">透明 &gt; 8% · 可见 &gt; 3.5% · 彩色 &gt; 2500 像素</text>
+        </g>
+
+        <!-- 从 canvas 到 step5 -->
+        <path d="M 260 320 L 260 358" stroke="#2b7ad6" stroke-width="2" fill="none" marker-end="url(#arr-w)" class="wt-line" data-delay="1200"/>
+
+        <!-- step5 → step6 -->
+        <path d="M 420 384 L 458 384" stroke="#2b7ad6" stroke-width="2" fill="none" marker-end="url(#arr-w)" class="wt-line" data-delay="1500"/>
+
+        <!-- 输出文件 -->
+        <g>
+          <rect x="660" y="230" width="140" height="44" rx="8" fill="url(#wt-yellow)" stroke="#d9b83e" stroke-width="1.3"/>
+          <text x="730" y="250" text-anchor="middle" font-size="12" font-weight="600" fill="#7a5c00">out/flow-field-</text>
+          <text x="730" y="265" text-anchor="middle" font-size="12" font-weight="600" fill="#7a5c00">transparent.png</text>
+        </g>
+        <path d="M 430 230 L 658 252" stroke="#2b7ad6" stroke-width="1.8" fill="none" marker-end="url(#arr-w)" class="wt-line" data-delay="1800"/>
+      </svg>
+    </div>
+
+    <div class="walkthrough-steps" id="walkthrough-steps">
+      <div class="step active">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>启动 Vite 开发服务器</h4>
+          <p><code>capture.mjs</code> 用 <code>child_process.spawn</code> 启动 Vite，监听 stdout 直到出现 <code>http://127.0.0.1:4174</code> 字样，确认服务器就绪。15 秒超时保护。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>启动无头 Chromium</h4>
+          <p>Playwright 以 headless 模式启动本地 Chrome，使用 SwiftShader 软件渲染确保跨环境一致性。创建视口为 1400×900 的新页面。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>导航到流场场景</h4>
+          <p>页面路由拦截器阻断所有外部域名请求（仅限 <code>127.0.0.1</code> 与 <code>data:</code> 协议），确保测试完全离线。访问 <code>/?scene=flow-field</code>。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>等待渲染就绪</h4>
+          <p>轮询 <code>window.__VIS_READY__</code> 全局标志，直到变为 <code>true</code>。此时 p5 已完成 setup 并调用了 <code>noLoop()</code>，220 条粒子轨迹全部绘制到 Canvas。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h4>截图与交互验证</h4>
+          <p>用 <code>omitBackground: true</code> 截取带 Alpha 通道的 PNG 保存到 <code>out/</code>。然后模拟鼠标移动两次，比较前后 <code>__INTERACTION_COUNT__</code> 的增量，确认事件绑定正常。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <h4>像素质量校验</h4>
+          <p>pngjs 读取 PNG 文件逐像素统计：透明像素 &gt; 8%（不是满屏）、可见像素 &gt; 3.5%（不是空白）、彩色像素 &gt; 2500 个（不是灰度/单色）。任一阈值不满足即抛出异常，测试失败。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 场景目录 -->
+  <section>
+    <h2><span class="num">05</span>场景目录总览</h2>
+    <p class="lead">
+      十二幅作品按算法家族分为十二类，每一类代表生成艺术中的一种经典范式。
+      <code>catalog.json</code> 是场景的元数据清单，为检索、批量测试和文档引用提供单一信息源。
+    </p>
+    <div class="scene-tags">
+      <span class="scene-tag">particle systems · 粒子系统</span>
+      <span class="scene-tag">simulation · 场模拟</span>
+      <span class="scene-tag">recursive systems · 递归系统</span>
+      <span class="scene-tag">dynamical systems · 动力系统</span>
+      <span class="scene-tag">constraint systems · 约束系统</span>
+      <span class="scene-tag">spatial subdivision · 空间细分</span>
+      <span class="scene-tag">scalar fields · 标量场</span>
+      <span class="scene-tag">pattern systems · 图案系统</span>
+      <span class="scene-tag">agent systems · 智能体系统</span>
+      <span class="scene-tag">wave systems · 波动系统</span>
+      <span class="scene-tag">algorithmic structure · 算法结构</span>
+      <span class="scene-tag">geometric systems · 几何系统</span>
+    </div>
+    <div class="catalog-list">
+      <div class="catalog-item">
+        <div class="id">flow-field</div>
+        <div class="name">流场 No.42</div>
+        <div class="tag">noise · particles · flow</div>
+      </div>
+      <div class="catalog-item">
+        <div class="id">reaction</div>
+        <div class="name">反应花园</div>
+        <div class="tag">reaction-diffusion · field</div>
+      </div>
+      <div class="catalog-item">
+        <div class="id">botanical</div>
+        <div class="name">植物递归</div>
+        <div class="tag">l-system · recursion</div>
+      </div>
+      <div class="catalog-item">
+        <div class="id">attractor</div>
+        <div class="name">奇异吸引子</div>
+        <div class="tag">attractor · chaos</div>
+      </div>
+      <div class="catalog-item">
+        <div class="id">circle-packing</div>
+        <div class="name">加权圆堆积</div>
+        <div class="tag">packing · collision</div>
+      </div>
+      <div class="catalog-item">
+        <div class="id">quadtree</div>
+        <div class="name">自适应四叉树</div>
+        <div class="tag">quadtree · subdivision</div>
+      </div>
+      <div class="catalog-item">
+        <div class="id">topography</div>
+        <div class="name">虚构地形</div>
+        <div class="tag">contour · noise · terrain</div>
+      </div>
+      <div class="catalog-item">
+        <div class="id">tapestry</div>
+        <div class="name">模块化挂毯</div>
+        <div class="tag">pattern · tiles · textile</div>
+      </div>
+      <div class="catalog-item">
+        <div class="id">swarm</div>
+        <div class="name">群集编排</div>
+        <div class="tag">boids · agents · motion</div>
+      </div>
+      <div class="catalog-item">
+        <div class="id">interference</div>
+        <div class="name">干涉图集</div>
+        <div class="tag">waves · interference</div>
+      </div>
+      <div class="catalog-item">
+        <div class="id">maze</div>
+        <div class="name">深度优先迷宫</div>
+        <div class="tag">maze · algorithm · paths</div>
+      </div>
+      <div class="catalog-item">
+        <div class="id">tiling</div>
+        <div class="name">准晶体铺砖</div>
+        <div class="tag">tiling · geometry</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 设计决策 -->
+  <section>
+    <h2><span class="num">06</span>关键设计决策</h2>
+    <p class="lead">
+      项目虽小，但在"成品而非过程"、"确定性而非随机"、"像素级测试而非断言"等方向上做了明确的取舍。
+    </p>
+    <div class="prose">
+      <p>
+        <strong>成品构图 vs 过程动画。</strong>
+        大多数 p5.js 演示是实时动画，而本项目选择了 <code>noLoop()</code> 模式——每个场景只渲染一帧静态作品。
+        这样输出的是可直接使用的设计素材（透明 PNG），而不是需要屏幕录制才能分享的动态过程。
+        测试也因此变得简单：等待"渲染完成"标志，然后截图校验，不需要处理动画帧同步。
+      </p>
+      <p>
+        <strong>确定性种子。</strong>
+        <code>randomSeed(42)</code> 与 <code>noiseSeed(42)</code> 让每一次渲染都输出完全相同的图像。
+        对于生成艺术演示项目来说，"每次刷新都有惊喜"可能更符合直觉，但确定性带来了可测试性——
+        图像可以做像素级回归对比，代码变更不会因为"随机差异"掩盖真实的视觉退化。
+      </p>
+      <p>
+        <strong>离线测试 + 请求拦截。</strong>
+        Playwright 的 <code>page.route()</code> 拦截了所有非本地的网络请求，防止字体加载、远程资源等外部依赖
+        导致的测试不稳定。这也意味着测试可以在无网络环境下运行，输出只取决于代码本身。
+      </p>
+      <p>
+        <strong>像素阈值而非像素对比。</strong>
+        测试没有用"与参考图完全一致"的像素比对，而是用了三个统计阈值（透明度、可见度、色彩丰富度）。
+        这是有意的选择：不同 Chrome 版本、不同渲染后端（SwiftShader vs 硬件加速）可能产生亚像素级差异，
+        严格的像素匹配会产生误报。统计阈值在"画面质量"层面做断言，对实现细节的容忍度更高。
+      </p>
+      <p>
+        <strong>单文件内联 vs 模块化拆分。</strong>
+        所有十二个渲染器都写在同一个 <code>main.ts</code> 里，没有拆分成多个模块。
+        这是一个权衡：对于演示性质的项目，单文件浏览成本更低，复制粘贴也更方便；
+        代价是文件行数偏多，但函数间相互独立，认知负担并不高。
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    Generative Art Demos · 架构文档 · 基于 v0.2.0 代码生成
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  // 检查 prefers-reduced-motion
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // 检测元素是否在视口中
+  function inView(el){
+    var rect = el.getBoundingClientRect();
+    return rect.top < window.innerHeight * 0.85 && rect.bottom > 0;
+  }
+
+  // 为 SVG 元素添加渐入动画
+  function animateDiagram(svgId, lineSelector, stepSelector){
+    var svg = document.getElementById(svgId);
+    if(!svg) return;
+
+    var lines = svg.querySelectorAll(lineSelector);
+    var steps = svg.querySelectorAll(stepSelector);
+
+    // 初始状态
+    lines.forEach(function(line){
+      var len = line.getTotalLength ? line.getTotalLength() : 200;
+      line.style.strokeDasharray = len;
+      line.style.strokeDashoffset = len;
+      line.style.opacity = '0';
+    });
+    steps.forEach(function(step){
+      step.style.opacity = '0';
+      step.style.transform = 'translateY(8px)';
+      step.style.transition = 'opacity .5s ease, transform .5s ease';
+    });
+
+    var triggered = false;
+    function trigger(){
+      if(triggered || reduceMotion) return;
+      if(!inView(svg)) return;
+      triggered = true;
+
+      steps.forEach(function(step, i){
+        setTimeout(function(){
+          step.style.opacity = '1';
+          step.style.transform = 'translateY(0)';
+        }, i * 180);
+      });
+
+      lines.forEach(function(line){
+        var delay = parseInt(line.getAttribute('data-delay') || '0', 10);
+        var len = line.getTotalLength ? line.getTotalLength() : 200;
+        setTimeout(function(){
+          line.style.transition = 'stroke-dashoffset 1s ease-in-out, opacity .3s';
+          line.style.opacity = '1';
+          line.style.strokeDashoffset = '0';
+        }, delay);
+      });
+    }
+
+    window.addEventListener('scroll', trigger, {passive:true});
+    window.addEventListener('resize', trigger, {passive:true});
+    trigger();
+  }
+
+  // 走查步骤联动高亮
+  function setupWalkthrough(){
+    var steps = document.querySelectorAll('#walkthrough-steps .step');
+    var wtSvg = document.getElementById('diagram-walkthrough');
+    if(!wtSvg) return;
+
+    var wtSteps = wtSvg.querySelectorAll('.wt-step');
+
+    function updateActiveStep(){
+      var scrollY = window.scrollY + window.innerHeight * 0.5;
+      var activeIndex = 0;
+      steps.forEach(function(step, i){
+        var rect = step.getBoundingClientRect();
+        var stepTop = rect.top + window.scrollY;
+        if(stepTop < scrollY) activeIndex = i;
+      });
+
+      steps.forEach(function(step, i){
+        step.classList.toggle('active', i === activeIndex);
+      });
+      wtSteps.forEach(function(step, i){
+        var fill = step.querySelector('rect');
+        if(fill){
+          if(i === activeIndex && !reduceMotion){
+            fill.style.filter = 'drop-shadow(0 2px 8px rgba(43,122,214,0.3))';
+          } else {
+            fill.style.filter = '';
+          }
+        }
+      });
+    }
+
+    if(!reduceMotion){
+      window.addEventListener('scroll', updateActiveStep, {passive:true});
+      updateActiveStep();
+    }
+  }
+
+  // 流场曲线动画
+  function animateFlowCurves(){
+    var svg = document.getElementById('diagram-walkthrough');
+    if(!svg || reduceMotion) return;
+
+    var curves = svg.querySelectorAll('.flow-curves path');
+    var dots = svg.querySelectorAll('.flow-dots circle');
+
+    curves.forEach(function(c, i){
+      var len = c.getTotalLength();
+      c.style.strokeDasharray = len;
+      c.style.strokeDashoffset = len;
+    });
+
+    var triggered = false;
+    function trigger(){
+      if(triggered) return;
+      if(!inView(svg)) return;
+      triggered = true;
+
+      curves.forEach(function(c, i){
+        setTimeout(function(){
+          c.style.transition = 'stroke-dashoffset 1.2s ease-out';
+          c.style.strokeDashoffset = '0';
+        }, 1000 + i * 150);
+      });
+      dots.forEach(function(d, i){
+        setTimeout(function(){
+          d.style.transition = 'opacity .4s ease, transform .4s ease';
+          d.style.opacity = '0.7';
+        }, 1800 + i * 80);
+      });
+    }
+
+    window.addEventListener('scroll', trigger, {passive:true});
+    trigger();
+  }
+
+  // 初始化
+  document.addEventListener('DOMContentLoaded', function(){
+    animateDiagram('diagram-overview', '.flow-arrow', '#build-nodes > *, #render-nodes > *, #test-nodes > *');
+    animateDiagram('diagram-pipeline', '.pipe-line', '.pipe-step');
+    animateDiagram('diagram-walkthrough', '.wt-line', '.wt-step');
+    setupWalkthrough();
+    animateFlowCurves();
+  });
+
+  // 如果 JS 完全没加载，CSS 的静态布局依然完整可读（无 JS 退化路径已通过 CSS 初始状态保证）
+
+})();
+</script>
+</body>
+</html>
