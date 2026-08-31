@@ -1,0 +1,8 @@
+{
+  "title": "generative-art-demos",
+  "library": "p5.js",
+  "tagline": "Twelve deterministic p5.js sketches composed as finished transparent PNGs rather than perpetual animations — flow fields, reaction diffusion, botanical growth and strange attractors.",
+  "rebuild": "just build",
+  "backdrop": "dark",
+  "code_search": "src/main.ts"
+}
