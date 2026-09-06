@@ -32,6 +32,19 @@ h1{margin:0;font-size:30px;letter-spacing:-.02em;font-weight:650}
 .pill{font:12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);
   background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:6px 11px}
 .pill b{color:var(--ink);font-weight:600}
+.controls{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+  padding:12px 0;margin:0 0 26px;background:linear-gradient(var(--bg) 80%,transparent)}
+.controls input{flex:1 1 220px;max-width:400px;border:1px solid var(--line);border-radius:10px;
+  background:var(--panel);color:var(--ink);padding:9px 13px;font-size:14px;font-family:inherit}
+.controls input:focus-visible,.chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);cursor:pointer;
+  background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:6px 11px}
+.chip span{color:var(--faint);margin-left:3px}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.chip[aria-pressed="true"] span{color:var(--bg);opacity:.75}
+#count{margin-left:auto;color:var(--muted);font:12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:nowrap}
+#empty{color:var(--muted);font-size:14px}
 .grid{display:grid;gap:26px;grid-template-columns:repeat(auto-fill,minmax(360px,1fr))}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
   overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
@@ -86,8 +99,14 @@ footer code{background:var(--chip);border-radius:4px;padding:2px 6px;
     <p class="tagline">Twelve deterministic p5.js sketches composed as finished transparent PNGs rather than perpetual animations — flow fields, reaction diffusion, botanical growth and strange attractors.</p>
     <div class="meta"><span class="pill">p5.js</span><span class="pill"><b>12</b> demos</span><span class="pill"><b>12</b> rendered</span></div>
   </header>
+  <section class="controls" aria-label="Gallery filters">
+    <input id="q" type="search" placeholder="Filter by title, blurb, tag, or family…" autocomplete="off" aria-label="Filter demos">
+    
+    <output id="count" aria-live="polite">12 shown</output>
+  </section>
+  <p id="empty" hidden>No demos match the current filter.</p>
   <main class="grid">
-      <article class="card">
+      <article class="card" data-family="particle systems" data-search="flow field what trajectories emerge from a seeded curl-like field? noise particles flow advanced 01 · particle systems particle systems">
         <figure class="shot dark"><img src="out/flow-field-transparent.png" alt="Flow field" loading="lazy"></figure>
         <div class="body">
           <div class="idx">01 · particle systems</div>
@@ -114,7 +133,7 @@ footer code{background:var(--chip);border-radius:4px;padding:2px 6px;
 </code></pre></details>
         </div>
       </article>
-      <article class="card">
+      <article class="card" data-family="simulation" data-search="reaction how do activator and inhibitor fields organize texture? reaction-diffusion field simulation advanced 02 · simulation simulation">
         <figure class="shot dark"><img src="out/reaction-transparent.png" alt="Reaction" loading="lazy"></figure>
         <div class="body">
           <div class="idx">02 · simulation</div>
@@ -133,7 +152,7 @@ footer code{background:var(--chip);border-radius:4px;padding:2px 6px;
 </code></pre></details>
         </div>
       </article>
-      <article class="card">
+      <article class="card" data-family="recursive systems" data-search="botanical how can an l-system produce a coherent herbarium? l-system botanical recursion advanced 03 · recursive systems recursive systems">
         <figure class="shot dark"><img src="out/botanical-transparent.png" alt="Botanical" loading="lazy"></figure>
         <div class="body">
           <div class="idx">03 · recursive systems</div>
@@ -149,7 +168,7 @@ footer code{background:var(--chip);border-radius:4px;padding:2px 6px;
 </code></pre></details>
         </div>
       </article>
-      <article class="card">
+      <article class="card" data-family="dynamical systems" data-search="attractor how does a strange attractor reveal density over time? attractor trajectory chaos advanced 04 · dynamical systems dynamical systems">
         <figure class="shot dark"><img src="out/attractor-transparent.png" alt="Attractor" loading="lazy"></figure>
         <div class="body">
           <div class="idx">04 · dynamical systems</div>
@@ -164,7 +183,7 @@ footer code{background:var(--chip);border-radius:4px;padding:2px 6px;
 </code></pre></details>
         </div>
       </article>
-      <article class="card">
+      <article class="card" data-family="constraint systems" data-search="circle packing how can weighted circles settle into a balanced editorial composition? packing collision composition advanced 05 · constraint systems constraint systems">
         <figure class="shot dark"><img src="out/circle-packing-transparent.png" alt="Circle packing" loading="lazy"></figure>
         <div class="body">
           <div class="idx">05 · constraint systems</div>
@@ -179,7 +198,7 @@ footer code{background:var(--chip);border-radius:4px;padding:2px 6px;
 </code></pre></details>
         </div>
       </article>
-      <article class="card">
+      <article class="card" data-family="spatial subdivision" data-search="quadtree how does adaptive subdivision reveal local image complexity? quadtree subdivision sampling advanced 06 · spatial subdivision spatial subdivision">
         <figure class="shot dark"><img src="out/quadtree-transparent.png" alt="Quadtree" loading="lazy"></figure>
         <div class="body">
           <div class="idx">06 · spatial subdivision</div>
@@ -194,7 +213,7 @@ footer code{background:var(--chip);border-radius:4px;padding:2px 6px;
 </code></pre></details>
         </div>
       </article>
-      <article class="card">
+      <article class="card" data-family="scalar fields" data-search="topography how can nested iso-lines evoke a fictional terrain? contour noise terrain advanced 07 · scalar fields scalar fields">
         <figure class="shot dark"><img src="out/topography-transparent.png" alt="Topography" loading="lazy"></figure>
         <div class="body">
           <div class="idx">07 · scalar fields</div>
@@ -209,7 +228,7 @@ footer code{background:var(--chip);border-radius:4px;padding:2px 6px;
 </code></pre></details>
         </div>
       </article>
-      <article class="card">
+      <article class="card" data-family="pattern systems" data-search="tapestry how can modular motifs build a textile-like field? pattern tiles textile advanced 08 · pattern systems pattern systems">
         <figure class="shot dark"><img src="out/tapestry-transparent.png" alt="Tapestry" loading="lazy"></figure>
         <div class="body">
           <div class="idx">08 · pattern systems</div>
@@ -223,7 +242,7 @@ footer code{background:var(--chip);border-radius:4px;padding:2px 6px;
 </code></pre></details>
         </div>
       </article>
-      <article class="card">
+      <article class="card" data-family="agent systems" data-search="swarm how do local steering rules create global flock structure? boids agents motion advanced 09 · agent systems agent systems">
         <figure class="shot dark"><img src="out/swarm-transparent.png" alt="Swarm" loading="lazy"></figure>
         <div class="body">
           <div class="idx">09 · agent systems</div>
@@ -238,7 +257,7 @@ footer code{background:var(--chip);border-radius:4px;padding:2px 6px;
 </code></pre></details>
         </div>
       </article>
-      <article class="card">
+      <article class="card" data-family="wave systems" data-search="interference how do multiple radial sources form an interference atlas? waves interference field advanced 10 · wave systems wave systems">
         <figure class="shot dark"><img src="out/interference-transparent.png" alt="Interference" loading="lazy"></figure>
         <div class="body">
           <div class="idx">10 · wave systems</div>
@@ -252,7 +271,7 @@ footer code{background:var(--chip);border-radius:4px;padding:2px 6px;
 </code></pre></details>
         </div>
       </article>
-      <article class="card">
+      <article class="card" data-family="algorithmic structure" data-search="maze how can a maze generator become a finished graphic? maze algorithm paths advanced 11 · algorithmic structure algorithmic structure">
         <figure class="shot dark"><img src="out/maze-transparent.png" alt="Maze" loading="lazy"></figure>
         <div class="body">
           <div class="idx">11 · algorithmic structure</div>
@@ -266,7 +285,7 @@ footer code{background:var(--chip);border-radius:4px;padding:2px 6px;
 </code></pre></details>
         </div>
       </article>
-      <article class="card">
+      <article class="card" data-family="geometric systems" data-search="tiling how can aperiodic-looking tiles preserve a strict construction rule? tiling geometry symmetry advanced 12 · geometric systems geometric systems">
         <figure class="shot dark"><img src="out/tiling-transparent.png" alt="Tiling" loading="lazy"></figure>
         <div class="body">
           <div class="idx">12 · geometric systems</div>
@@ -288,5 +307,38 @@ window.__INTERACTION_COUNT__=<span class="n">0</span>;
     <code>out/</code>, so open this file straight from the checkout.
   </footer>
 </div>
+<script>
+(function(){
+  var q=document.getElementById('q'),count=document.getElementById('count'),empty=document.getElementById('empty');
+  var cards=[].slice.call(document.querySelectorAll('.card'));
+  var chips=[].slice.call(document.querySelectorAll('.chip'));
+  var family='';
+  function apply(){
+    var t=q.value.trim().toLowerCase(),n=0;
+    for(var i=0;i<cards.length;i++){
+      var c=cards[i];
+      var ok=(!family||c.getAttribute('data-family')===family)&&
+             (!t||(c.getAttribute('data-search')||'').indexOf(t)>=0);
+      c.style.display=ok?'':'none';
+      if(ok)n++;
+    }
+    count.value=n+' / '+cards.length+' shown';
+    empty.hidden=n>0;
+    for(var j=0;j<chips.length;j++){
+      var ch=chips[j];
+      ch.setAttribute('aria-pressed',String(ch.getAttribute('data-family')===family));
+    }
+  }
+  q.addEventListener('input',apply);
+  chips.forEach(function(ch){
+    ch.addEventListener('click',function(){
+      var f=ch.getAttribute('data-family');
+      family=(f===family)?'':f;
+      apply();
+    });
+  });
+  apply();
+})();
+</script>
 </body>
 </html>

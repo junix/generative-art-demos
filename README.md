@@ -2,6 +2,8 @@
 
 Twelve deterministic p5.js sketches designed as finished transparent PNG compositions rather than perpetual animations.
 
+Browse every demo with its source in **[gallery.html](gallery.html)** — searchable, follows your light/dark theme.
+
 `catalog.json` makes each visual searchable by use case, question, family, complexity, and technique tags.
 
 | Flow field | Reaction | Botanical | Attractor |
